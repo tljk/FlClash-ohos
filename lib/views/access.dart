@@ -11,6 +11,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+List<Package> definedPackagesToList(Map<String, String> definedPackages) {
+  return definedPackages.entries
+      .map(
+        (entry) => Package(
+          packageName: entry.key,
+          label: entry.value,
+          system: false,
+          internet: true,
+          lastUpdateTime: 0,
+        ),
+      )
+      .toList();
+}
+
 class AccessView extends ConsumerStatefulWidget {
   const AccessView({super.key});
 
@@ -31,7 +45,13 @@ class _AccessViewState extends ConsumerState<AccessView> {
   void initState() {
     super.initState();
     _controller = ScrollController();
-    _completer.complete(ref.read(systemActionProvider.notifier).getPackages());
+    if (system.isOhos) {
+      _completer.complete();
+    } else {
+      _completer.complete(
+        ref.read(systemActionProvider.notifier).getPackages(),
+      );
+    }
     final accessControl = ref
         .read(vpnSettingProvider.select((state) => state.accessControlProps))
         .copyWith();
@@ -124,6 +144,26 @@ class _AccessViewState extends ConsumerState<AccessView> {
     );
   }
 
+  Future<void> _handleEditDefinedPackages() async {
+    final appLocalizations = context.appLocalizations;
+    final definedPackages = ref.read(definedPackagesProvider);
+    final result = await showExtend<Map<String, String>>(
+      context,
+      builder: (_) => MapInputPage(
+        title: appLocalizations.definedApps,
+        map: definedPackages,
+        keyLabel: appLocalizations.packageName,
+        valueLabel: appLocalizations.name,
+        titleBuilder: (item) => Text(item.value),
+        subtitleBuilder: (item) => Text(item.key),
+      ),
+    );
+    if (result == null) {
+      return;
+    }
+    ref.read(definedPackagesProvider.notifier).value = result;
+  }
+
   void _handleSelected(String packageName) {
     ref.read(accessControlStateProvider.notifier).update((state) {
       final newSet = Set<String>.from(state.currentList)
@@ -156,10 +196,16 @@ class _AccessViewState extends ConsumerState<AccessView> {
     }
   }
 
+  List<Package> _readPackages() {
+    return system.isOhos
+        ? definedPackagesToList(ref.read(definedPackagesProvider))
+        : ref.read(packagesProvider);
+  }
+
   AccessControlProps _getRealAccessControlProps(
     AccessControlProps accessControl,
   ) {
-    final packages = ref.read(packagesProvider);
+    final packages = _readPackages();
     if (packages.isEmpty) {
       return accessControl;
     }
@@ -277,6 +323,12 @@ class _AccessViewState extends ConsumerState<AccessView> {
               label: appLocalizations.settings,
               onPressed: _handleToSetting,
             ),
+            if (system.isOhos)
+              PopupMenuItemData(
+                icon: Icons.edit,
+                label: appLocalizations.definedApps,
+                onPressed: _handleEditDefinedPackages,
+              ),
             PopupMenuItemData(
               icon: Icons.emergency_outlined,
               label: appLocalizations.action,
@@ -382,7 +434,9 @@ class _AccessViewState extends ConsumerState<AccessView> {
   Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProvider(LoadingTag.access));
     final query = ref.watch(queryProvider(QueryTag.access));
-    final packages = ref.watch(packagesProvider);
+    final packages = system.isOhos
+        ? definedPackagesToList(ref.watch(definedPackagesProvider))
+        : ref.watch(packagesProvider);
     final accessControl = ref.watch(accessControlStateProvider);
     if (_isInit) {
       if (_lastMode != accessControl.mode) {

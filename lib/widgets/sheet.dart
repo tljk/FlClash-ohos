@@ -139,6 +139,7 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
     }
     switch (Theme.of(context).platform) {
       case TargetPlatform.android:
+      case TargetPlatform.ohos:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
@@ -252,7 +253,10 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
               ),
             ),
           ),
-          Padding(padding: const EdgeInsets.symmetric(horizontal: 4), child: appBar),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: appBar,
+          ),
           const SizedBox(height: 6),
         ],
       );

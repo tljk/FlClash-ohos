@@ -87,7 +87,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final ref = globalState.container;
         ref.read(setupActionProvider.notifier).tryCheckIp();
-        if (system.isAndroid) {
+        if (system.isAndroid || system.isOhos) {
           ref.read(coreActionProvider.notifier).tryStartCore();
         }
       });

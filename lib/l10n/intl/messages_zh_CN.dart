@@ -199,6 +199,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "defaultNameserver": MessageLookupByLibrary.simpleMessage("默认域名服务器"),
     "defaultNameserverDesc": MessageLookupByLibrary.simpleMessage("用于解析DNS服务器"),
     "defaultText": MessageLookupByLibrary.simpleMessage("默认"),
+    "definedApps": MessageLookupByLibrary.simpleMessage("自定义应用"),
     "delay": MessageLookupByLibrary.simpleMessage("延迟"),
     "delayTest": MessageLookupByLibrary.simpleMessage("延迟测试"),
     "delete": MessageLookupByLibrary.simpleMessage("删除"),
@@ -418,6 +419,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "自定义模式，支持完全自定义修改代理组以及规则",
     ),
+    "packageName": MessageLookupByLibrary.simpleMessage("包名"),
     "palette": MessageLookupByLibrary.simpleMessage("调色板"),
     "password": MessageLookupByLibrary.simpleMessage("密码"),
     "paste": MessageLookupByLibrary.simpleMessage("粘贴"),

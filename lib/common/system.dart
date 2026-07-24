@@ -31,6 +31,8 @@ class System {
 
   bool get isLinux => Platform.isLinux;
 
+  bool get isOhos => Platform.isOhos;
+
   Future<int> get version async {
     final deviceInfo = await DeviceInfoPlugin().deviceInfo;
     return switch (Platform.operatingSystem) {
@@ -69,7 +71,7 @@ class System {
   }
 
   Future<AuthorizeCode> authorizeCore() async {
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       return AuthorizeCode.error;
     }
     final isAdmin = await checkIsAdmin();
@@ -130,7 +132,7 @@ class System {
   }
 
   Future<void> exit() async {
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       await SystemNavigator.pop();
     }
     await window?.close();

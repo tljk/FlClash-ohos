@@ -289,7 +289,10 @@ class GlobalState {
     if (res != true) {
       return;
     }
-    launchUrl(Uri.parse(url));
+    launchUrl(
+      Uri.parse(url),
+      mode: Platform.isOhos ? LaunchMode.externalApplication : LaunchMode.platformDefault,
+    );
   }
 
   Future<void> attach() async {

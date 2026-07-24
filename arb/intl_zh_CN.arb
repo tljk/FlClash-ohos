@@ -90,6 +90,8 @@
   "appAccessControl": "应用访问控制",
   "accessControlAllowDesc": "只允许选中应用进入VPN",
   "accessControlNotAllowDesc": "选中应用将会被排除在VPN之外",
+  "definedApps": "自定义应用",
+  "packageName": "包名",
   "selected": "已选择",
   "proxyPort": "代理端口",
   "port": "端口",

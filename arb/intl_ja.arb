@@ -90,6 +90,8 @@
   "appAccessControl": "アプリアクセス制御",
   "accessControlAllowDesc": "選択したアプリのみVPNを許可",
   "accessControlNotAllowDesc": "選択したアプリをVPNから除外",
+  "definedApps": "定義済みアプリ",
+  "packageName": "パッケージ名",
   "selected": "選択済み",
   "proxyPort": "プロキシポート",
   "port": "ポート",

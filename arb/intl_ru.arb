@@ -90,6 +90,8 @@
   "appAccessControl": "Контроль доступа приложений",
   "accessControlAllowDesc": "Разрешить только выбранным приложениям доступ к VPN",
   "accessControlNotAllowDesc": "Выбранные приложения будут исключены из VPN",
+  "definedApps": "Заданные приложения",
+  "packageName": "Имя пакета",
   "selected": "Выбрано",
   "proxyPort": "Порт прокси",
   "port": "Порт",

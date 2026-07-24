@@ -289,6 +289,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "For resolving DNS server",
     ),
     "defaultText": MessageLookupByLibrary.simpleMessage("Default"),
+    "definedApps": MessageLookupByLibrary.simpleMessage("Defined apps"),
     "delay": MessageLookupByLibrary.simpleMessage("Delay"),
     "delayTest": MessageLookupByLibrary.simpleMessage("Delay Test"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
@@ -612,6 +613,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "Custom mode, fully customize proxy groups and rules",
     ),
+    "packageName": MessageLookupByLibrary.simpleMessage("Package name"),
     "palette": MessageLookupByLibrary.simpleMessage("Palette"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "paste": MessageLookupByLibrary.simpleMessage("Paste"),

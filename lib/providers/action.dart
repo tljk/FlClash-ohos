@@ -95,7 +95,10 @@ class CommonAction extends _$CommonAction {
         cancelText: isUser ? null : currentAppLocalizations.noLongerRemind,
       );
       if (res == true) {
-        launchUrl(Uri.parse('https://github.com/$repository/releases/latest'));
+        launchUrl(
+          Uri.parse('https://github.com/$repository/releases/latest'),
+          mode: Platform.isOhos ? LaunchMode.externalApplication : LaunchMode.platformDefault,
+        );
       } else if (!isUser && res == false) {
         ref
             .read(appSettingProvider.notifier)
@@ -167,7 +170,7 @@ class SetupAction extends _$SetupAction {
       return;
     }
     commonPrint.log('init status');
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       await _updateStartTime();
     }
     final status = isStart == true
@@ -385,7 +388,7 @@ class SetupAction extends _$SetupAction {
     final realTunEnable = ref.read(realTunEnableProvider);
     final realPatchConfig = patchConfig.copyWith.tun(enable: realTunEnable);
     final setupState = await ref.read(setupStateProvider(profile?.id).future);
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       globalState.lastVpnState = ref.read(vpnStateProvider);
       final sharedState = ref.read(sharedStateProvider);
       preferences.saveShareState(sharedState);
@@ -473,6 +476,9 @@ class BackupAction extends _$BackupAction {
       ref.read(overrideDnsProvider.notifier).value = config.overrideDns;
       ref.read(networkSettingProvider.notifier).value = config.networkProps;
       ref.read(hotKeyActionsProvider.notifier).value = config.hotKeyActions;
+      ref.read(excludeSSIDsProvider.notifier).value = config.excludeSSIDs;
+      ref.read(definedPackagesProvider.notifier).value =
+          config.definedPackages;
       return;
     } finally {
       await restoreDir.safeDelete(recursive: true);

@@ -1,0 +1,109 @@
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "EntryAbility",
+    "deviceTypes": [
+      "phone"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "compressNativeLibs": true,
+    "pages": "$profile:main_pages",
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        "description": "$string:EntryAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:EntryAbility_label",
+        "startWindowIcon": "$media:icon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "backgroundModes": [
+          "taskKeeping"
+        ],
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ]
+      }
+    ],
+    "extensionAbilities": [
+      {
+        "name": "VPNExtensionAbility",
+        "srcEntry": "./ets/extensionAbility/VPNExtensionAbility.ets",
+        "type": "vpn"
+      }
+    ],
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET",
+        "reason": "$string:permission_reason_internet"
+      },
+      {
+        "name": "ohos.permission.GET_WIFI_INFO",
+        "reason": "$string:permission_reason_get_wifi_info"
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO",
+        "reason": "$string:permission_reason_get_network_info"
+      },
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+        "reason": "$string:permission_reason_keep_background_running"
+      },
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING_SYSTEM",
+        "reason": "$string:permission_reason_keep_background_running_system"
+      },
+      {
+        "name": "ohos.permission.READ_MEDIA",
+        "reason": "$string:permission_reason_read_media",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "inuse"
+        }
+      },
+      {
+        "name": "ohos.permission.WRITE_MEDIA",
+        "reason": "$string:permission_reason_write_media",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "inuse"
+        }
+      },
+      {
+        "name": "ohos.permission.CAMERA",
+        "reason": "$string:permission_reason_camera",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "inuse"
+        }
+      },
+      {
+        "name": "ohos.permission.READ_PASTEBOARD",
+        "reason": "$string:permission_reason_read_pasteboard",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "inuse"
+        }
+      }
+    ]
+  }
+}

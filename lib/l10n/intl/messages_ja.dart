@@ -225,6 +225,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "DNSサーバーの解決用",
     ),
     "defaultText": MessageLookupByLibrary.simpleMessage("デフォルト"),
+    "definedApps": MessageLookupByLibrary.simpleMessage("定義済みアプリ"),
     "delay": MessageLookupByLibrary.simpleMessage("遅延"),
     "delayTest": MessageLookupByLibrary.simpleMessage("遅延テスト"),
     "delete": MessageLookupByLibrary.simpleMessage("削除"),
@@ -480,6 +481,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "カスタムモード、プロキシグループとルールを完全にカスタマイズ可能",
     ),
+    "packageName": MessageLookupByLibrary.simpleMessage("パッケージ名"),
     "palette": MessageLookupByLibrary.simpleMessage("パレット"),
     "password": MessageLookupByLibrary.simpleMessage("パスワード"),
     "paste": MessageLookupByLibrary.simpleMessage("貼り付け"),

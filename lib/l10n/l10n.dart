@@ -714,6 +714,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Defined apps`
+  String get definedApps {
+    return Intl.message(
+      'Defined apps',
+      name: 'definedApps',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Package name`
+  String get packageName {
+    return Intl.message(
+      'Package name',
+      name: 'packageName',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Selected`
   String get selected {
     return Intl.message('Selected', name: 'selected', desc: '', args: []);

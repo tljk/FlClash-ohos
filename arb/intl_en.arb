@@ -90,6 +90,8 @@
   "appAccessControl": "App access control",
   "accessControlAllowDesc": "Only allow selected app to enter VPN",
   "accessControlNotAllowDesc": "The selected application will be excluded from VPN",
+  "definedApps": "Defined apps",
+  "packageName": "Package name",
   "selected": "Selected",
   "proxyPort": "ProxyPort",
   "port": "Port",
