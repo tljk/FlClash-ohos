@@ -141,7 +141,15 @@ dependency_overrides:
   mobile_scanner:
     git:
       url: https://github.com/tljk/mobile_scanner.git
-      ref: v7.1.4-fix-ohos 
+      ref: v7.1.4-fix-ohos
+  re_editor:
+    git:
+      url: https://github.com/tljk/re-editor.git
+      ref: main
+  flutter_js:
+    git:
+      url: https://github.com/tljk/flutter_js.git
+      ref: master
 dev_dependencies:
   flutter_test:
     sdk: flutter

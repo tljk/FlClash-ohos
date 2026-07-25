@@ -7,6 +7,7 @@ import { RPCType } from '../extensionAbility/VPNExtensionAbility';
 import { VpnOptions } from '../models/State';
 import { rpc } from '@kit.IPCKit';
 import { vpnExtension } from '@kit.NetworkKit';
+import { readLargeString, writeLargeString } from '../utils/Rpc';
 import ServicePlugin from '../plugins/ServicePlugin';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import AppPlugin from '../plugins/AppPlugin';
@@ -19,7 +20,7 @@ export class CallbackStub extends rpc.RemoteObject {
   }
 
   onRemoteMessageRequest(code: number, send: rpc.MessageSequence, reply: rpc.MessageSequence, option: rpc.MessageOption): boolean | Promise<boolean> {
-    const data = send.readString()
+    const data = readLargeString(send)
     this.onResult(data)
     return true
   }
@@ -155,7 +156,7 @@ export default class EntryAbility extends FlutterAbility {
       const send = rpc.MessageSequence.create()
       const reply = rpc.MessageSequence.create()
       options.setAsync(true)
-      send.writeString(data)
+      writeLargeString(send, data)
       send.writeRemoteObject(callbackStub)
       return this.remote.sendMessageRequest(RPCType.invokeAction, send, reply, options).finally(() => {
         send.reclaim()
@@ -173,7 +174,7 @@ export default class EntryAbility extends FlutterAbility {
       const send = rpc.MessageSequence.create()
       const reply = rpc.MessageSequence.create()
       options.setAsync(false)
-      send.writeString(JSON.stringify(vpnOptions))
+      writeLargeString(send, JSON.stringify(vpnOptions))
       send.writeLong(runTime)
       send.writeRemoteObject(resultStub)
       return this.remote.sendMessageRequest(RPCType.startService, send, reply, options).finally(() => {
