@@ -16,11 +16,7 @@ export default class PowerManager {
         if (err || !commonEventData) {
           reject(err)
         } else {
-          if (commonEventData.parameters?.napped || commonEventData.parameters?.sleeping) {
-            callback(true)
-          } else {
-            callback(false)
-          }
+          callback(commonEventData.parameters?.sleeping)
           resolve()
         }
       })
