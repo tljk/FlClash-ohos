@@ -7,21 +7,22 @@ import { RPCType } from '../extensionAbility/VPNExtensionAbility';
 import { VpnOptions } from '../models/State';
 import { rpc } from '@kit.IPCKit';
 import { vpnExtension } from '@kit.NetworkKit';
-import { readLargeString, writeLargeString } from '../utils/Rpc';
+import { ChunkedSender, ChunkedReader } from '../utils/Rpc';
 import ServicePlugin from '../plugins/ServicePlugin';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import AppPlugin from '../plugins/AppPlugin';
 
 export class CallbackStub extends rpc.RemoteObject {
   private onResult: (data: string) => void | undefined
+  private reader: ChunkedReader = new ChunkedReader()
   constructor(descriptor: string, onResult: (data: string) => void) {
     super(descriptor)
     this.onResult = onResult
   }
 
   onRemoteMessageRequest(code: number, send: rpc.MessageSequence, reply: rpc.MessageSequence, option: rpc.MessageOption): boolean | Promise<boolean> {
-    const data = readLargeString(send)
-    this.onResult(data)
+    const data = this.reader.read(send)
+    if (data !== null) this.onResult(data)
     return true
   }
 }
@@ -43,6 +44,7 @@ export class ResultStub extends rpc.RemoteObject {
 export default class EntryAbility extends FlutterAbility {
   private connectId: number | undefined
   private remote: rpc.RemoteObject | undefined
+  private sender: ChunkedSender = new ChunkedSender()
 
   configureFlutterEngine(flutterEngine: FlutterEngine): void {
     super.configureFlutterEngine(flutterEngine)
@@ -85,7 +87,7 @@ export default class EntryAbility extends FlutterAbility {
   }
 
   private async disconnect(): Promise<void> {
-    if (this.remote) {
+    if (this.remote && this.connectId) {
       return this.context.disconnectServiceExtensionAbility(this.connectId).then(() => {
         this.remote = undefined
         const bundleInfo = bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_DEFAULT)
@@ -152,15 +154,8 @@ export default class EntryAbility extends FlutterAbility {
   async handleInvokeAction(data: string, callbackStub: CallbackStub): Promise<rpc.RequestResult> {
     await this.connect()
     if (this.remote) {
-      const options = new rpc.MessageOption()
-      const send = rpc.MessageSequence.create()
-      const reply = rpc.MessageSequence.create()
-      options.setAsync(true)
-      writeLargeString(send, data)
-      send.writeRemoteObject(callbackStub)
-      return this.remote.sendMessageRequest(RPCType.invokeAction, send, reply, options).finally(() => {
-        send.reclaim()
-        reply.reclaim()
+      return this.sender.send(this.remote, RPCType.invokeAction, data, (send: rpc.MessageSequence) => {
+        send.writeRemoteObject(callbackStub)
       })
     } else {
       return Promise.reject(new Error('failed to connect to VPN extension ability'))
@@ -170,16 +165,9 @@ export default class EntryAbility extends FlutterAbility {
   async handleStartService(vpnOptions: VpnOptions, runTime: number, resultStub: ResultStub): Promise<rpc.RequestResult> {
     await this.connect()
     if (this.remote) {
-      const options = new rpc.MessageOption()
-      const send = rpc.MessageSequence.create()
-      const reply = rpc.MessageSequence.create()
-      options.setAsync(false)
-      writeLargeString(send, JSON.stringify(vpnOptions))
-      send.writeLong(runTime)
-      send.writeRemoteObject(resultStub)
-      return this.remote.sendMessageRequest(RPCType.startService, send, reply, options).finally(() => {
-        send.reclaim()
-        reply.reclaim()
+      return this.sender.send(this.remote, RPCType.startService, JSON.stringify(vpnOptions), (send: rpc.MessageSequence) => {
+        send.writeLong(runTime)
+        send.writeRemoteObject(resultStub)
       })
     } else {
       return Promise.reject(new Error('failed to connect to VPN extension ability'))

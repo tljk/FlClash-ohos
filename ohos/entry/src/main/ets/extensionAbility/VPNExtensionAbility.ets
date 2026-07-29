@@ -3,7 +3,7 @@ import { Want, bundleManager } from '@kit.AbilityKit'
 import { rpc } from '@kit.IPCKit'
 import { setEventListener, invokeAction, startTUN, stopTun, forceGC, suspend, updateDns } from 'core'
 import { AccessControlMode, VpnOptions } from '../models/State'
-import { readLargeString, writeLargeString } from '../utils/Rpc'
+import { ChunkedSender, ChunkedReader } from '../utils/Rpc'
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import PowerManager from '../managers/PowerManager'
 import NetworkManager from '../managers/NetworkManager'
@@ -28,6 +28,7 @@ export enum RPCType{
 
 export class ServiceStub extends rpc.RemoteObject {
   private parent: VPNExtensionAbility
+  private reader: ChunkedReader = new ChunkedReader()
 
   constructor(descriptor: string, parent: VPNExtensionAbility) {
     super(descriptor)
@@ -40,12 +41,15 @@ export class ServiceStub extends rpc.RemoteObject {
       this.parent.handleSetEventListener(remote)
       return true
     } else if (code === RPCType.invokeAction) {
-      const data = readLargeString(send)
+      const data = this.reader.read(send)
+      if (data === null) return true
       const remote = send.readRemoteObject() as rpc.RemoteObject
       this.parent.handleInvokeAction(data, remote)
       return true
     } else if (code === RPCType.startService) {
-      const vpnOptions = JSON.parse(readLargeString(send)) as VpnOptions
+      const raw = this.reader.read(send)
+      if (raw === null) return true
+      const vpnOptions = JSON.parse(raw) as VpnOptions
       const runTime = send.readLong()
       const remote = send.readRemoteObject() as rpc.RemoteObject
       this.parent.handleStartService(vpnOptions, runTime, remote)
@@ -75,6 +79,7 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
   private powerManager: PowerManager | undefined
   private networkManager: NetworkManager | undefined
   private runTime: number = 0
+  private sender: ChunkedSender = new ChunkedSender()
 
   onCreate(want: Want): void {
     this.vpnConnection = vpnExtension.createVpnConnection(this.context)
@@ -184,15 +189,7 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
   }
 
   private sendCallback(remote: rpc.RemoteObject, data: string): void {
-    const options = new rpc.MessageOption()
-    const send = rpc.MessageSequence.create()
-    const reply = rpc.MessageSequence.create()
-    options.setAsync(true)
-    writeLargeString(send, data)
-    remote.sendMessageRequest(0, send, reply, options).finally(() => {
-      send.reclaim()
-      reply.reclaim()
-    })
+    this.sender.send(remote, 0, data, null)
   }
 
   private sendResult(remote: rpc.RemoteObject, runTime: number): void {
