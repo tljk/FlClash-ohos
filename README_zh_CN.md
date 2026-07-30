@@ -125,7 +125,7 @@ on Mobile:
 
         1. 安装 `DevEco Studio` 及 OpenHarmony SDK
 
-        2. 设置 `OHOS_SDK_HOME` 环境变量
+        2. 设置 `OHOS_NDK_HOME` 环境变量
 
         3. 运行构建脚本
 

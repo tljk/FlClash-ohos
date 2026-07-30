@@ -1,7 +1,7 @@
 name: fl_clash
 description: A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
 publish_to: 'none'
-version: 0.8.93+2026072902
+version: 0.8.93+2026073001
 environment:
   sdk: '>=3.8.0 <4.0.0'
 
@@ -150,6 +150,10 @@ dependency_overrides:
     git:
       url: https://github.com/tljk/flutter_js.git
       ref: master
+  smooth_sheets:
+    git:
+      url: https://github.com/tljk/smooth_sheets.git
+      ref: main
 dev_dependencies:
   flutter_test:
     sdk: flutter

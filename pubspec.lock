@@ -1360,10 +1360,11 @@ packages:
   smooth_sheets:
     dependency: "direct main"
     description:
-      name: smooth_sheets
-      sha256: "325a8f6ae6dc2a86edbcc1f9f07a4ebaf4ef09db8d050e77c53e7b67c699dff9"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "."
+      ref: main
+      resolved-ref: "9648155f0b611d24ed6aea1f2db1e2cc8a1de513"
+      url: "https://github.com/tljk/smooth_sheets.git"
+    source: git
     version: "1.0.3"
   source_gen:
     dependency: transitive

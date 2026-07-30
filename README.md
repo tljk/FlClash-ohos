@@ -125,7 +125,7 @@ Support the following actions
 
         1. Install `DevEco Studio` with the OpenHarmony SDK
 
-        2. Set the `OHOS_SDK_HOME` environment variable
+        2. Set the `OHOS_NDK_HOME` environment variable
 
         3. Run build script
 

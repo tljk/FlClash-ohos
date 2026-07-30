@@ -15,6 +15,7 @@
         </tr>
     </thead>
     <tbody align=left>
+        <!--
         <tr>
         <td>Android</td>
             <td>
@@ -43,6 +44,13 @@
                 <a href="https://github.com/chen08209/FlClash/releases/download/vVERSION/FlClash-VERSION-linux-amd64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux"> </a><br>
                 <a href="https://github.com/chen08209/FlClash/releases/download/vVERSION/FlClash-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/DebPackage-x64-FF9966.svg?logo=debian"> </a><br>
                 <a href="https://github.com/chen08209/FlClash/releases/download/vVERSION/FlClash-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/RpmPackage-x64-F1B42F.svg?logo=redhat"> </a>
+            </td>
+        </tr>
+        -->
+        <tr>
+            <td>OpenHarmony</td>
+            <td>
+                <a href="https://github.com/tljk/FlClash-ohos/releases/download/vVERSION/FlClash-VERSION-ohos.hap"><img src="https://img.shields.io/badge/HAP-ARMv8-168039.svg?logo=harmonyos"></a>
             </td>
         </tr>
     </tbody>
