@@ -1,6 +1,8 @@
 import { vpnExtension, VpnExtensionAbility, connection } from '@kit.NetworkKit'
 import { Want, bundleManager } from '@kit.AbilityKit'
 import { rpc } from '@kit.IPCKit'
+import { deviceInfo } from '@kit.BasicServicesKit'
+import { util } from '@kit.ArkTS'
 import { setEventListener, invokeAction, startTUN, stopTun, forceGC, suspend, updateDns } from 'core'
 import { AccessControlMode, VpnOptions } from '../models/State'
 import { ChunkedSender, ChunkedReader } from '../utils/Rpc'
@@ -76,6 +78,7 @@ export class ServiceStub extends rpc.RemoteObject {
 export default class VPNExtensionAbility extends VpnExtensionAbility {
   private service: ServiceStub | undefined
   private vpnConnection: vpnExtension.VpnConnection | undefined
+  private vpnId: string | undefined
   private powerManager: PowerManager | undefined
   private networkManager: NetworkManager | undefined
   private runTime: number = 0
@@ -213,11 +216,19 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
   }
 
   handleStartService(vpnOptions: VpnOptions, runTime: number, remote: rpc.RemoteObject): void {
+    if (!vpnOptions.enable) {
+      this.vpnId = undefined
+      this.powerManager?.subscribe(suspend)
+      this.networkManager?.subscribe(updateDns)
+      this.runTime = runTime !== 0 ? runTime : Date.now()
+      this.sendResult(remote, this.runTime)
+      return
+    }
     const vpnConfig = this.toVpnConfig(vpnOptions)
     this.vpnConnection?.create(vpnConfig).then((fd: number) => {
       startTUN(
-        (socketFd: number): Promise<void> => this.vpnConnection?.protect(socketFd).catch((err: Error) => { 
-          console.log(`Call protect failed <= ${err.message ?? err}`) 
+        (socketFd: number): Promise<void> => this.vpnConnection?.protect(socketFd).catch((err: Error) => {
+          console.log(`Call protect failed <= ${err.message ?? err}`)
         }) ?? Promise.resolve(),
         (protocol: number, source: string, target: string, uid: number) => this.resolverProcess(protocol, source, target, uid),
         fd,
@@ -225,6 +236,11 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
         this.toTunAddress(vpnOptions),
         this.toTunDns(vpnOptions),
       )
+      if (deviceInfo.sdkApiVersion >= 20) {
+        this.vpnConnection?.generateVpnId().then((vpnId) => { this.vpnId = vpnId })
+      } else {
+        this.vpnId = util.generateRandomUUID(true);
+      }
       this.powerManager?.subscribe(suspend)
       this.networkManager?.subscribe(updateDns)
       this.runTime = runTime !== 0 ? runTime : Date.now()
@@ -235,7 +251,8 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
   }
 
   handleStopService(remote: rpc.RemoteObject): void {
-    stopTun()
+    if (this.vpnId) stopTun()
+    this.vpnId = undefined
     this.powerManager?.unsubscribe()
     this.networkManager?.unsubscribe()
     this.vpnConnection?.destroy()
