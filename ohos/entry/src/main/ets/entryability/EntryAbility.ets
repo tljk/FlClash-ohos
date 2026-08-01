@@ -3,8 +3,10 @@ import { FlutterAbility, FlutterEngine, MethodResult } from '@ohos/flutter_ohos'
 import { GeneratedPluginRegistrant } from '../plugins/GeneratedPluginRegistrant';
 import { common, Want, wantAgent, WantAgent, bundleManager } from '@kit.AbilityKit';
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit'
+import { antifraudPicker } from '@kit.DeviceSecurityKit';
 import { RPCType } from '../extensionAbility/VPNExtensionAbility';
 import { VpnOptions } from '../models/State';
+import { Bundle } from '../models/Bundle';
 import { rpc } from '@kit.IPCKit';
 import { vpnExtension } from '@kit.NetworkKit';
 import { ChunkedSender, ChunkedReader } from '../utils/Rpc';
@@ -105,6 +107,19 @@ export default class EntryAbility extends FlutterAbility {
   async handleMoveTaskToBack(result: MethodResult): Promise<void> {
     return this.context.moveAbilityToBackground().finally(() => {
       result.success(true)
+    })
+  }
+
+  async handleGetPackages(result: MethodResult): Promise<void> {
+    return antifraudPicker.selectFraudApp(this.context).then((antifraudAppResult: antifraudPicker.AntifraudAppResult) => {
+      const bundleList: Bundle[] = []
+      for (const singleAntifraudAppInfo of antifraudAppResult.appInfo) {
+        bundleList.push({ packageName: singleAntifraudAppInfo.bundleName, label: singleAntifraudAppInfo.label, system: false, internet: true, lastUpdateTime: 0 } as Bundle)
+      }
+      result.success(JSON.stringify(bundleList))
+    }).catch((err: Error) => {
+      console.log(`Call getPackages failed <= ${err.message ?? err}`)
+      result.success('[]')
     })
   }
 

@@ -47,6 +47,10 @@
     {
       "name": "permission_reason_get_network_info",
       "value": ""
+    },
+    {
+      "name": "permission_reason_use_fraud_app_picker",
+      "value": ""
     }
   ]
 }

@@ -340,9 +340,9 @@ class NetworkListView extends StatelessWidget {
         ...generateSection(
           title: 'VPN',
           items: [
-            const VpnSystemProxyItem(),
-            const BypassDomainItem(),
-            const AllowBypassItem(),
+            if (!system.isOhos) const VpnSystemProxyItem(),
+            if (!system.isOhos) const BypassDomainItem(),
+            if (!system.isOhos) const AllowBypassItem(),
             const Ipv6Item(),
             const DNSHijackingItem(),
           ],

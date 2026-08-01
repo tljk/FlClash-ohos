@@ -83,6 +83,7 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
   private networkManager: NetworkManager | undefined
   private runTime: number = 0
   private sender: ChunkedSender = new ChunkedSender()
+  private uidBundleNameMap: Map<number, string> = new Map<number, string>()
 
   onCreate(want: Want): void {
     this.vpnConnection = vpnExtension.createVpnConnection(this.context)
@@ -187,8 +188,28 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
     return dns.join(',')
   }
 
+  private toNetAddress(addr: string): connection.NetAddress {
+    const separator = addr.lastIndexOf(':')
+    const host = addr.slice(0, separator)
+    const port = Number(addr.slice(separator + 1))
+    const address = host.startsWith('[') && host.endsWith(']') ? host.slice(1, -1) : host
+    const family = address.includes(':') ? 2 : 1
+    return { address, family, port }
+  }
+
   private resolverProcess(protocol: number, source: string, target: string, uid: number): string {
-    return ''
+    const nextUid = deviceInfo.sdkApiVersion >= 23 ?
+      connection.getConnectOwnerUidSync(protocol, this.toNetAddress(source), this.toNetAddress(target)) : uid
+    if (nextUid === -1) return ''
+    if (!this.uidBundleNameMap.has(nextUid)) {
+      try {
+        this.uidBundleNameMap.set(nextUid, bundleManager.getBundleNameByUidSync(nextUid))
+      } catch (err) {
+        this.uidBundleNameMap.set(nextUid, '')
+      }
+    }
+
+    return this.uidBundleNameMap.get(nextUid) ?? ''
   }
 
   private sendCallback(remote: rpc.RemoteObject, data: string): void {

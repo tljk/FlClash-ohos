@@ -146,7 +146,15 @@ class _AccessViewState extends ConsumerState<AccessView> {
 
   Future<void> _handleEditDefinedPackages() async {
     final appLocalizations = context.appLocalizations;
-    final definedPackages = ref.read(definedPackagesProvider);
+    var definedPackages = ref.read(definedPackagesProvider);
+    if (system.isOhos) {
+      final packages = await app?.getPackages() ?? [];
+      definedPackages = {
+        ...definedPackages,
+        for (final package in packages) package.packageName: package.label,
+      };
+      if (!mounted) return;
+    }
     final result = await showExtend<Map<String, String>>(
       context,
       builder: (_) => MapInputPage(

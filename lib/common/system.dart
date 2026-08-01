@@ -39,6 +39,7 @@ class System {
       'macos' => (deviceInfo as MacOsDeviceInfo).majorVersion,
       'android' => (deviceInfo as AndroidDeviceInfo).version.sdkInt,
       'windows' => (deviceInfo as WindowsDeviceInfo).majorVersion,
+      'ohos' => (deviceInfo as dynamic).sdkApiVersion as int,
       String() => 0,
     };
   }

@@ -13,6 +13,13 @@ import (
 	t "core/tun"
 	"encoding/json"
 	"errors"
+	"net"
+	"runtime"
+	"strings"
+	"sync"
+	"syscall"
+	"unsafe"
+
 	"github.com/metacubex/mihomo/component/dialer"
 	"github.com/metacubex/mihomo/component/process"
 	"github.com/metacubex/mihomo/constant"
@@ -20,11 +27,6 @@ import (
 	"github.com/metacubex/mihomo/listener/sing_tun"
 	"github.com/metacubex/mihomo/log"
 	"golang.org/x/sync/semaphore"
-	"net"
-	"strings"
-	"sync"
-	"syscall"
-	"unsafe"
 )
 
 var eventListener unsafe.Pointer
@@ -95,7 +97,9 @@ func (th *TunHandler) handleResolveProcess(source, target net.Addr) string {
 	case "tcp", "tcp4", "tcp6":
 		protocol = syscall.IPPROTO_TCP
 	}
-	if version < 29 {
+	if runtime.GOOS == "openharmony" && version < 23 {
+		uid = platform.QuerySocketUidFromProcFs(source, target)
+	} else if runtime.GOOS == "android" && version < 29 {
 		uid = platform.QuerySocketUidFromProcFs(source, target)
 	}
 	return resolveProcess(th.callback, protocol, source.String(), target.String(), uid)

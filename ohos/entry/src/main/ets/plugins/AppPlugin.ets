@@ -39,7 +39,7 @@ export default class AppPlugin implements FlutterPlugin, MethodCallHandler {
     } else if (call.method === "initShortcuts") {
       result.success(true)
     } else if (call.method === "getPackages") {
-      result.success("[]")
+      this.parent.handleGetPackages(result)
     } else if (call.method === "getChinaPackageNames") {
       result.success("[]")
     } else if (call.method === "getPackageIcon") {
