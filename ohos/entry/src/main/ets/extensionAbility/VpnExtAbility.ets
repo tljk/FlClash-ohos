@@ -3,9 +3,10 @@ import { Want, bundleManager } from '@kit.AbilityKit'
 import { rpc } from '@kit.IPCKit'
 import { deviceInfo } from '@kit.BasicServicesKit'
 import { util } from '@kit.ArkTS'
-import { setEventListener, invokeAction, startTUN, stopTun, forceGC, suspend, updateDns } from 'core'
+import { setEventListener, invokeAction, startTUN, stopTun, forceGC, suspend, updateDns, quickSetup } from 'core'
 import { AccessControlMode, VpnOptions } from '../models/State'
 import { ChunkedSender, ChunkedReader } from '../utils/Rpc'
+import { commonEventManager } from '@kit.BasicServicesKit';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import PowerManager from '../managers/PowerManager'
 import NetworkManager from '../managers/NetworkManager'
@@ -29,10 +30,10 @@ export enum RPCType{
 }
 
 export class ServiceStub extends rpc.RemoteObject {
-  private parent: VPNExtensionAbility
+  private parent: VpnExtAbility
   private reader: ChunkedReader = new ChunkedReader()
 
-  constructor(descriptor: string, parent: VPNExtensionAbility) {
+  constructor(descriptor: string, parent: VpnExtAbility) {
     super(descriptor)
     this.parent = parent
   }
@@ -64,6 +65,12 @@ export class ServiceStub extends rpc.RemoteObject {
       this.parent.handleGetRunTime(reply)
       return true
     } else if (code === RPCType.quickSetup) {
+      const initParams = this.reader.read(send)
+      if (initParams === null) return true
+      const setupParams = this.reader.read(send)
+      if (setupParams === null) return true
+      const remote = send.readRemoteObject() as rpc.RemoteObject
+      this.parent.handleQuickSetup(initParams, setupParams, remote)
       return true
     } else if (code === RPCType.updateNotificationParams) {
       return true
@@ -75,7 +82,7 @@ export class ServiceStub extends rpc.RemoteObject {
   }
 }
 
-export default class VPNExtensionAbility extends VpnExtensionAbility {
+export default class VpnExtAbility extends VpnExtensionAbility {
   private service: ServiceStub | undefined
   private vpnConnection: vpnExtension.VpnConnection | undefined
   private vpnId: string | undefined
@@ -103,7 +110,7 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
   }
 
   onDisconnect(want: Want): void {
-
+    setEventListener()
   }
 
   onMemoryLevel(level: AbilityConstant.MemoryLevel): void {
@@ -158,11 +165,10 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
 
     const accessControl = options.accessControlProps
     if (accessControl.enable) {
-      const bundleInfo = bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_DEFAULT)
       if (accessControl.mode === AccessControlMode.ACCEPT_SELECTED) {
-        config.trustedApplications = [...accessControl.acceptList, bundleInfo.name]
+        config.trustedApplications = [...accessControl.acceptList, this.context.applicationInfo.name]
       } else {
-        config.blockedApplications = accessControl.rejectList.filter((it) => it !== bundleInfo.name)
+        config.blockedApplications = accessControl.rejectList.filter((it) => it !== this.context.applicationInfo.name)
       }
     }
 
@@ -237,52 +243,61 @@ export default class VPNExtensionAbility extends VpnExtensionAbility {
   }
 
   handleStartService(vpnOptions: VpnOptions, runTime: number, remote: rpc.RemoteObject): void {
-    if (!vpnOptions.enable) {
+    if (vpnOptions.enable) {
+      const vpnConfig = this.toVpnConfig(vpnOptions)
+      this.vpnConnection?.create(vpnConfig).then((fd: number) => {
+        startTUN(
+          (socketFd: number): Promise<void> => this.vpnConnection?.protect(socketFd).catch((err: Error) => {
+            console.log(`Call protect failed <= ${err.message ?? err}`)
+          }) ?? Promise.resolve(),
+          (protocol: number, source: string, target: string, uid: number) => this.resolverProcess(protocol, source, target, uid),
+          fd,
+          vpnOptions.stack,
+          this.toTunAddress(vpnOptions),
+          this.toTunDns(vpnOptions),
+        )
+        if (deviceInfo.sdkApiVersion >= 20) {
+          this.vpnConnection?.generateVpnId().then((vpnId) => { this.vpnId = vpnId })
+        } else {
+          this.vpnId = util.generateRandomUUID(true);
+        }
+        this.powerManager?.subscribe(suspend)
+        this.networkManager?.subscribe(updateDns)
+        this.runTime = runTime !== 0 ? runTime : Date.now()
+        commonEventManager.publish('SERVICE_START', { data: String(this.runTime) }, (err: Error) => { if (err) throw err })
+      }).catch((err: Error) => {
+        console.log(`Call startTUN failed <= ${err.message ?? err}`)
+      }).finally(() => {
+        this.sendResult(remote, this.runTime)
+      })
+    } else {
       this.vpnId = undefined
       this.powerManager?.subscribe(suspend)
       this.networkManager?.subscribe(updateDns)
       this.runTime = runTime !== 0 ? runTime : Date.now()
       this.sendResult(remote, this.runTime)
-      return
+      commonEventManager.publish('SERVICE_START', { data: String(this.runTime) }, (err: Error) => { if (err) throw err })
     }
-    const vpnConfig = this.toVpnConfig(vpnOptions)
-    this.vpnConnection?.create(vpnConfig).then((fd: number) => {
-      startTUN(
-        (socketFd: number): Promise<void> => this.vpnConnection?.protect(socketFd).catch((err: Error) => {
-          console.log(`Call protect failed <= ${err.message ?? err}`)
-        }) ?? Promise.resolve(),
-        (protocol: number, source: string, target: string, uid: number) => this.resolverProcess(protocol, source, target, uid),
-        fd,
-        vpnOptions.stack,
-        this.toTunAddress(vpnOptions),
-        this.toTunDns(vpnOptions),
-      )
-      if (deviceInfo.sdkApiVersion >= 20) {
-        this.vpnConnection?.generateVpnId().then((vpnId) => { this.vpnId = vpnId })
-      } else {
-        this.vpnId = util.generateRandomUUID(true);
-      }
-      this.powerManager?.subscribe(suspend)
-      this.networkManager?.subscribe(updateDns)
-      this.runTime = runTime !== 0 ? runTime : Date.now()
-      this.sendResult(remote, this.runTime)
-    }).catch((err: Error) => {
-      console.log(`Call startTUN failed <= ${err.message ?? err}`)
-    })
+
   }
 
   handleStopService(remote: rpc.RemoteObject): void {
     if (this.vpnId) stopTun()
     this.vpnId = undefined
+    this.vpnConnection?.destroy()
     this.powerManager?.unsubscribe()
     this.networkManager?.unsubscribe()
-    this.vpnConnection?.destroy()
     this.runTime = 0
     this.sendResult(remote, this.runTime)
+    commonEventManager.publish('SERVICE_STOP', { data: String(this.runTime) }, (err: Error) => { if (err) throw err })
   }
 
   handleGetRunTime(reply: rpc.MessageSequence): void {
     reply.writeLong(this.runTime)
+  }
+
+  handleQuickSetup(initParams: string, setupParams: string, remote: rpc.RemoteObject): void {
+    quickSetup((callbackData: string) => { this.sendCallback(remote, callbackData) }, initParams, setupParams)
   }
 }
 

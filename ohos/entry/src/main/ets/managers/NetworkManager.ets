@@ -27,7 +27,7 @@ export default class NetworkManager {
     callback(Array.from(new Set(dnsList)).join(","))
   }
 
-  async subscribe(callback: (s: string) => void): Promise<void> {
+  subscribe(callback: (s: string) => void): Promise<void> {
     return new Promise((resolve, reject) => {
       this.netConnection.on("netAvailable", (netHandle: connection.NetHandle) => {
         if (netHandle?.netId) {
@@ -73,7 +73,7 @@ export default class NetworkManager {
     })
   }
 
-  async unsubscribe(): Promise<void> {
+  unsubscribe(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.netConnection.unregister((err: Error) => {
         if (err) {

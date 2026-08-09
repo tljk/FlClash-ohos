@@ -35,13 +35,37 @@
             ]
           }
         ]
+      },
+      {
+        "name": "TempAbility",
+        "srcEntry": "./ets/entryability/TempAbility.ets",
+        "description": "$string:TempAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:TempAbility_label",
+        "startWindowIcon": "$media:icon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": false,
+        "backgroundModes": [
+          "taskKeeping"
+        ]
       }
     ],
     "extensionAbilities": [
       {
-        "name": "VPNExtensionAbility",
-        "srcEntry": "./ets/extensionAbility/VPNExtensionAbility.ets",
+        "name": "VpnExtAbility",
+        "srcEntry": "./ets/extensionAbility/VpnExtAbility.ets",
         "type": "vpn"
+      },
+      {
+        "name": "FormExtAbility",
+        "srcEntry": "./ets/extensionAbility/FormExtAbility.ets",
+        "type": "form",
+        "metadata": [
+          {
+            "name": "ohos.extension.form",
+            "resource": "$profile:form_config"
+          }
+        ]
       }
     ],
     "requestPermissions": [

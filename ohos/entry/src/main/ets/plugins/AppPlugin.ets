@@ -11,6 +11,9 @@ import EntryAbility from '../entryability/EntryAbility';
 export default class AppPlugin implements FlutterPlugin, MethodCallHandler {
   private parent: EntryAbility
   private channel: MethodChannel | undefined
+  private set excludeFromRecent(excluded: boolean) {
+    AppStorage.setOrCreate('exclude_recent', excluded)
+  }
 
   constructor(entryAbility: EntryAbility) {
     this.parent = entryAbility
@@ -35,6 +38,7 @@ export default class AppPlugin implements FlutterPlugin, MethodCallHandler {
     if (call.method === "moveTaskToBack") {
       this.parent.handleMoveTaskToBack(result)
     } else if (call.method === "updateExcludeFromRecents") {
+      this.excludeFromRecent = (call.args as Map<string, boolean>).get('value') as boolean
       result.success(true)
     } else if (call.method === "initShortcuts") {
       result.success(true)

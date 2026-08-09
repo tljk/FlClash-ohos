@@ -478,8 +478,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "ja": MessageLookupByLibrary.simpleMessage("Japanese"),
     "justNow": MessageLookupByLibrary.simpleMessage("Just now"),
+    "keep": MessageLookupByLibrary.simpleMessage("Remove from recents"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
       "Tcp keep alive interval",
+    ),
+    "keepDesc": MessageLookupByLibrary.simpleMessage(
+      "Keep the VPN service alive when the app is removed from recent tasks",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Key"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),

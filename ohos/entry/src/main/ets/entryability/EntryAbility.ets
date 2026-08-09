@@ -1,18 +1,19 @@
 
 import { FlutterAbility, FlutterEngine, MethodResult } from '@ohos/flutter_ohos';
 import { GeneratedPluginRegistrant } from '../plugins/GeneratedPluginRegistrant';
-import { common, Want, wantAgent, WantAgent, bundleManager } from '@kit.AbilityKit';
-import { backgroundTaskManager } from '@kit.BackgroundTasksKit'
+import { common, Want, bundleManager } from '@kit.AbilityKit';
 import { antifraudPicker } from '@kit.DeviceSecurityKit';
-import { RPCType } from '../extensionAbility/VPNExtensionAbility';
+import { RPCType } from '../extensionAbility/VpnExtAbility';
 import { VpnOptions } from '../models/State';
 import { Bundle } from '../models/Bundle';
 import { rpc } from '@kit.IPCKit';
 import { vpnExtension } from '@kit.NetworkKit';
 import { ChunkedSender, ChunkedReader } from '../utils/Rpc';
+import { Lock } from '../utils/Lock'
 import ServicePlugin from '../plugins/ServicePlugin';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import AppPlugin from '../plugins/AppPlugin';
+import NotificationManager from '../managers/NotificationManager';
 
 export class CallbackStub extends rpc.RemoteObject {
   private onResult: (data: string) => void | undefined
@@ -45,9 +46,15 @@ export class ResultStub extends rpc.RemoteObject {
 
 export default class EntryAbility extends FlutterAbility {
   private connectId: number | undefined
-  private remote: rpc.RemoteObject | undefined
   private sender: ChunkedSender = new ChunkedSender()
-
+  private notificationManager: NotificationManager | undefined
+  private connecting: Promise<rpc.RemoteObject> | undefined
+  private unlock: (() => void) | undefined
+  private get lock(): Lock {
+    if (!AppStorage.has('ipc_lock')) AppStorage.setOrCreate('ipc_lock', new Lock())
+    return AppStorage.get('ipc_lock') as Lock
+  }
+  
   configureFlutterEngine(flutterEngine: FlutterEngine): void {
     super.configureFlutterEngine(flutterEngine)
     flutterEngine.getPlugins()?.add(new AppPlugin(this))
@@ -57,60 +64,92 @@ export default class EntryAbility extends FlutterAbility {
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     super.onCreate(want, launchParam)
+    this.notificationManager = new NotificationManager(this.context)
+    this.notificationManager?.subscribe()
   }
 
   onDestroy(): void {
     super.onDestroy()
-  }
-
-  private async connect(): Promise<void> {
-    if (!this.remote) {
-      const bundleInfo = bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_DEFAULT)
-      const want: Want = {
-        bundleName: bundleInfo.name,
-        abilityName: 'VPNExtensionAbility',
-      }
-      return vpnExtension.startVpnExtensionAbility(want).then(() => {
-        const getProxy = (want: Want, context: common.UIAbilityContext): Promise<rpc.RemoteObject> => {
-          return new Promise((resolve, reject) => {
-            const options: common.ConnectOptions = {
-              onConnect: (elementName: bundleManager.ElementName, remote: rpc.RemoteObject) => { resolve(remote) },
-              onDisconnect: (elementName: bundleManager.ElementName) => { this.remote = undefined },
-              onFailed: (code: number) => { reject(new Error(`connectServiceExtensionAbility failed: ${code}`)) },
-            }
-            this.connectId = context.connectServiceExtensionAbility(want, options)
-          })
+    this.connecting = undefined
+    this.notificationManager?.unsubscribe()
+    if (this.unlock && this.connectId) {
+      this.context.disconnectServiceExtensionAbility(this.connectId).then(() => {
+        if (this.unlock) {
+          this.unlock()
+          this.unlock = undefined
         }
-        return getProxy(want, this.context).then((remote: rpc.RemoteObject) => { this.remote = remote })
       })
     } else {
-      return Promise.resolve()
+      this.lock.revoke(this.context.abilityInfo.name)
     }
   }
 
-  private async disconnect(): Promise<void> {
-    if (this.remote && this.connectId) {
+  private connect(): Promise<rpc.RemoteObject> {
+    const want: Want = {
+      bundleName: this.context.applicationInfo.name,
+      abilityName: 'VpnExtAbility',
+    }
+    return vpnExtension.startVpnExtensionAbility(want).then(() => {
+      return this.lock.acquire(this.context.abilityInfo.name).then((unlock: () => void) => {
+        const getProxy = (want: Want, context: common.UIAbilityContext, unlock: () => void): Promise<rpc.RemoteObject> => {
+          return new Promise((resolve, reject) => {
+            this.connectId = context.connectServiceExtensionAbility(want, {
+              onConnect: (elementName: bundleManager.ElementName, remote: rpc.RemoteObject) => {
+                this.unlock = unlock
+                resolve(remote)
+              },
+              onDisconnect: (elementName: bundleManager.ElementName) => {
+                unlock()
+                this.unlock = undefined
+                this.connecting = undefined
+                this.connectId = undefined
+              },
+              onFailed: (code: number) => {
+                unlock()
+                this.connecting = undefined
+                this.connectId = undefined
+                reject(new Error(`connectServiceExtensionAbility failed: ${code}`))
+              },
+            } as common.ConnectOptions)
+          })
+        }
+        return getProxy(want, this.context, unlock)
+      })
+    })
+  }
+
+  private ensureConnected(): Promise<rpc.RemoteObject> {
+    if (!this.connecting) this.connecting = this.connect()
+    return this.connecting
+  }
+
+  private disconnect(): Promise<void> {
+    this.connecting = undefined
+    if (this.unlock && this.connectId) {
       return this.context.disconnectServiceExtensionAbility(this.connectId).then(() => {
-        this.remote = undefined
-        const bundleInfo = bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_DEFAULT)
+        if (this.unlock) {
+          this.unlock()
+          this.unlock = undefined
+        }
         const want: Want = {
-          bundleName: bundleInfo.name,
-          abilityName: 'VPNExtensionAbility',
+          bundleName: this.context.applicationInfo.name,
+          abilityName: 'VpnExtAbility',
         }
         return vpnExtension.stopVpnExtensionAbility(want)
       })
     } else {
+      this.lock.revoke(this.context.abilityInfo.name)
       return Promise.resolve()
     }
   }
 
-  async handleMoveTaskToBack(result: MethodResult): Promise<void> {
+  handleMoveTaskToBack(result: MethodResult): Promise<void> {
     return this.context.moveAbilityToBackground().finally(() => {
       result.success(true)
     })
   }
 
-  async handleGetPackages(result: MethodResult): Promise<void> {
+  handleGetPackages(result: MethodResult): Promise<void> {
     return antifraudPicker.selectFraudApp(this.context).then((antifraudAppResult: antifraudPicker.AntifraudAppResult) => {
       const bundleList: Bundle[] = []
       for (const singleAntifraudAppInfo of antifraudAppResult.appInfo) {
@@ -123,104 +162,67 @@ export default class EntryAbility extends FlutterAbility {
     })
   }
 
-  async startContinuousTask(): Promise<void> {
-    const bundleInfo = bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_HAP_MODULE | bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_ABILITY)
-    const wantAgentInfo: wantAgent.WantAgentInfo = {
-      wants: [{
-        bundleName: bundleInfo.name,
-        abilityName: 'EntryAbility',
-      }],
-      actionType: wantAgent.OperationType.START_ABILITY,
-      requestCode: 0,
-      actionFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
-    }
-    return wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj: WantAgent) => {
-      backgroundTaskManager.on("continuousTaskCancel", (cancelInfo: backgroundTaskManager.ContinuousTaskCancelInfo) => { setTimeout(() => this.startContinuousTask(), 1000) })
-      return backgroundTaskManager.startBackgroundRunning(this.context, backgroundTaskManager.BackgroundMode.TASK_KEEPING, wantAgentObj)
-    })
-  }
-
-  async stopContinuousTask(): Promise<void> {
-    backgroundTaskManager.off("continuousTaskCancel")
-    return backgroundTaskManager.stopBackgroundRunning(this.context)
-  }
-
-  async handleInit(callbackStub: CallbackStub): Promise<rpc.RequestResult> {
-    await this.connect()
-    if (this.remote) {
+  handleInit(callbackStub: CallbackStub): Promise<rpc.RequestResult> {
+    return this.ensureConnected().then((remote: rpc.RemoteObject) => {
       const options = new rpc.MessageOption()
       const send = rpc.MessageSequence.create()
       const reply = rpc.MessageSequence.create()
       options.setAsync(true)
       send.writeRemoteObject(callbackStub)
-      return this.remote.sendMessageRequest(RPCType.setEventListener, send, reply, options).finally(() => {
+      return remote.sendMessageRequest(RPCType.setEventListener, send, reply, options).finally(() => {
         send.reclaim()
         reply.reclaim()
       })
-    } else {
-      return Promise.reject(new Error('failed to connect to VPN extension ability'))
-    }
+    })
   }
 
-  async handleShutdown(): Promise<void> {
+  handleShutdown(): Promise<void> {
     return this.disconnect()
   }
 
-  async handleInvokeAction(data: string, callbackStub: CallbackStub): Promise<rpc.RequestResult> {
-    await this.connect()
-    if (this.remote) {
-      return this.sender.send(this.remote, RPCType.invokeAction, data, (send: rpc.MessageSequence) => {
+  handleInvokeAction(data: string, callbackStub: CallbackStub): Promise<rpc.RequestResult> {
+    return this.ensureConnected().then((remote: rpc.RemoteObject) => {
+      return this.sender.send(remote, RPCType.invokeAction, data, (send: rpc.MessageSequence) => {
         send.writeRemoteObject(callbackStub)
       })
-    } else {
-      return Promise.reject(new Error('failed to connect to VPN extension ability'))
-    }
+    })
   }
 
-  async handleStartService(vpnOptions: VpnOptions, runTime: number, resultStub: ResultStub): Promise<rpc.RequestResult> {
-    await this.connect()
-    if (this.remote) {
-      return this.sender.send(this.remote, RPCType.startService, JSON.stringify(vpnOptions), (send: rpc.MessageSequence) => {
+  handleStartService(vpnOptions: VpnOptions, runTime: number, resultStub: ResultStub): Promise<rpc.RequestResult> {
+    return this.ensureConnected().then((remote: rpc.RemoteObject) => {
+      return this.sender.send(remote, RPCType.startService, JSON.stringify(vpnOptions), (send: rpc.MessageSequence) => {
         send.writeLong(runTime)
         send.writeRemoteObject(resultStub)
       })
-    } else {
-      return Promise.reject(new Error('failed to connect to VPN extension ability'))
-    }
+    })
   }
 
-  async handleStopService(resultStub: ResultStub): Promise<rpc.RequestResult> {
-    await this.connect()
-    if (this.remote) {
+  handleStopService(resultStub: ResultStub): Promise<rpc.RequestResult> {
+    return this.ensureConnected().then((remote: rpc.RemoteObject) => {
       const options = new rpc.MessageOption()
       const send = rpc.MessageSequence.create()
       const reply = rpc.MessageSequence.create()
       options.setAsync(false)
       send.writeRemoteObject(resultStub)
-      return this.remote.sendMessageRequest(RPCType.stopService, send, reply, options).finally(() => {
+      return remote.sendMessageRequest(RPCType.stopService, send, reply, options).finally(() => {
         send.reclaim()
         reply.reclaim()
       })
-    } else {
-      return Promise.reject(new Error('failed to connect to VPN extension ability'))
-    }
+    })
   }
 
-  async handleGetRunTime(): Promise<number> {
-    await this.connect()
-    if (this.remote) {
+  handleGetRunTime(): Promise<number> {
+    return this.ensureConnected().then((remote: rpc.RemoteObject) => {
       const options = new rpc.MessageOption()
       const send = rpc.MessageSequence.create()
       const reply = rpc.MessageSequence.create()
       options.setAsync(false)
-      return this.remote.sendMessageRequest(RPCType.getRunTime, send, reply, options).then((requestResult: rpc.RequestResult) => {
+      return remote.sendMessageRequest(RPCType.getRunTime, send, reply, options).then((requestResult: rpc.RequestResult) => {
         return requestResult.reply.readLong()
       }).finally(() => {
         send.reclaim()
         reply.reclaim()
       })
-    } else {
-      return Promise.reject(new Error('failed to connect to VPN extension ability'))
-    }
+    })
   }
 }

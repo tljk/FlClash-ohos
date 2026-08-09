@@ -169,7 +169,29 @@ class _AccessViewState extends ConsumerState<AccessView> {
     if (result == null) {
       return;
     }
+    final removedPackageNames = definedPackages.keys.toSet().difference(
+      result.keys.toSet(),
+    );
     ref.read(definedPackagesProvider.notifier).value = result;
+    if (removedPackageNames.isEmpty) {
+      return;
+    }
+    AccessControlProps prune(AccessControlProps props) => props.copyWith(
+      acceptList: props.acceptList
+          .where((item) => !removedPackageNames.contains(item))
+          .toList(),
+      rejectList: props.rejectList
+          .where((item) => !removedPackageNames.contains(item))
+          .toList(),
+    );
+    ref.read(accessControlStateProvider.notifier).update(prune);
+    ref
+        .read(vpnSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(
+            accessControlProps: prune(state.accessControlProps),
+          ),
+        );
   }
 
   void _handleSelected(String packageName) {

@@ -497,8 +497,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "ja": MessageLookupByLibrary.simpleMessage("Японский"),
     "justNow": MessageLookupByLibrary.simpleMessage("Только что"),
+    "keep": MessageLookupByLibrary.simpleMessage("Удалить из последних задач"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
       "Интервал поддержания TCP-соединения",
+    ),
+    "keepDesc": MessageLookupByLibrary.simpleMessage(
+      "Поддерживать работу VPN-сервиса при удалении приложения из последних задач",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Ключ"),
     "language": MessageLookupByLibrary.simpleMessage("Язык"),

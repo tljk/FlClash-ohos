@@ -1229,6 +1229,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Remove from recents`
+  String get keep {
+    return Intl.message(
+      'Remove from recents',
+      name: 'keep',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep the VPN service alive when the app is removed from recent tasks`
+  String get keepDesc {
+    return Intl.message(
+      'Keep the VPN service alive when the app is removed from recent tasks',
+      name: 'keepDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Standard`
   String get expand {
     return Intl.message('Standard', name: 'expand', desc: '', args: []);

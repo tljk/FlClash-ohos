@@ -13,6 +13,14 @@
       "value": "$string:app_name"
     },
     {
+      "name": "TempAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "TempAbility_label",
+      "value": "$string:app_name"
+    },
+    {
       "name": "permission_reason_internet",
       "value": ""
     },
@@ -50,6 +58,14 @@
     },
     {
       "name": "permission_reason_use_fraud_app_picker",
+      "value": ""
+    },
+    {
+      "name": "widget_desc",
+      "value": ""
+    },
+    {
+      "name": "widget_display_name",
       "value": ""
     }
   ]

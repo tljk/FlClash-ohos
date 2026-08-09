@@ -157,6 +157,8 @@
   "sync": "Sync",
   "exclude": "Hidden from recent tasks",
   "excludeDesc": "When the app is in the background, the app is hidden from the recent task",
+  "keep": "Remove from recents",
+  "keepDesc": "Keep the VPN service alive when the app is removed from recent tasks",
   "expand": "Standard",
   "shrink": "Shrink",
   "min": "Min",

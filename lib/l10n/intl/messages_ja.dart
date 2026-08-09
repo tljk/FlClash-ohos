@@ -370,8 +370,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "ipv6InboundDesc": MessageLookupByLibrary.simpleMessage("IPv6インバウンドを許可"),
     "ja": MessageLookupByLibrary.simpleMessage("日本語"),
     "justNow": MessageLookupByLibrary.simpleMessage("たった今"),
+    "keep": MessageLookupByLibrary.simpleMessage("最近のタスクから削除"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
       "TCPキープアライブ間隔",
+    ),
+    "keepDesc": MessageLookupByLibrary.simpleMessage(
+      "アプリが最近のタスクから削除されてもVPNサービスを維持",
     ),
     "key": MessageLookupByLibrary.simpleMessage("キー"),
     "language": MessageLookupByLibrary.simpleMessage("言語"),
