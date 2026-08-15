@@ -84,10 +84,16 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
     if (state == AppLifecycleState.resumed) {
       permissions.check();
       render?.resume();
+      final pendingCrashMessage = globalState.pendingCrashMessage;
+      final hadCrash = pendingCrashMessage != null;
+      if (hadCrash) {
+        globalState.pendingCrashMessage = null;
+        context.showNotifier(pendingCrashMessage);
+      }
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final ref = globalState.container;
         ref.read(setupActionProvider.notifier).tryCheckIp();
-        if (system.isAndroid || system.isOhos) {
+        if (!hadCrash && (system.isAndroid || system.isOhos)) {
           ref.read(coreActionProvider.notifier).tryStartCore();
         }
       });

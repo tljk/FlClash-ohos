@@ -10,6 +10,7 @@ import { CallbackStub, ResultStub } from '../entryability/EntryAbility'
 import { State, VpnOptions } from '../models/State'
 import { formProvider } from '@kit.FormKit';
 import { Want } from '@kit.AbilityKit';
+import { publishEvent } from '../utils/Event'
 import EntryAbility from '../entryability/EntryAbility';
 
 export enum RunState {
@@ -84,6 +85,12 @@ export default class ServicePlugin implements FlutterPlugin, MethodCallHandler {
       result.success("")
     }).catch((err: Error) => {
       result.success(err.message ?? `${err}`)
+    })
+    this.parent.setOnDisconnected((message: string) => {
+      this.runTime = 0
+      this.runState = RunState.stop
+      this.channel?.invokeMethod("crash", message)
+      publishEvent('SERVICE_STOP', `${this.runTime}`)
     })
   }
 

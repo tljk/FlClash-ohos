@@ -140,6 +140,7 @@ class SetupAction extends _$SetupAction {
   }
 
   Future<void> _handleStart() async {
+    _updateTimer?.cancel();
     startTime ??= DateTime.now();
     //The local status must be updated when performing the run task
     ref.read(commonActionProvider.notifier).updateRunTime();
@@ -162,6 +163,13 @@ class SetupAction extends _$SetupAction {
     _updateTimer?.cancel();
     _updateTimer = null;
     await coreController.stopListener();
+  }
+
+  void handleCrash() {
+    startTime = null;
+    _updateTimer?.cancel();
+    _updateTimer = null;
+    ref.read(runTimeProvider.notifier).value = null;
   }
 
   Future<void> initStatus() async {

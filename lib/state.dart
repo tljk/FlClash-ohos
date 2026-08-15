@@ -39,6 +39,7 @@ class GlobalState {
   String? lastConfigMd5;
   VpnState? lastVpnState;
   bool isAttach = false;
+  String? pendingCrashMessage;
 
   GlobalState._internal();
 

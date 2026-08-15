@@ -9,11 +9,15 @@ import { Bundle } from '../models/Bundle';
 import { rpc } from '@kit.IPCKit';
 import { vpnExtension } from '@kit.NetworkKit';
 import { ChunkedSender, ChunkedReader } from '../utils/Rpc';
-import { Lock } from '../utils/Lock'
 import ServicePlugin from '../plugins/ServicePlugin';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import AppPlugin from '../plugins/AppPlugin';
 import NotificationManager from '../managers/NotificationManager';
+
+interface Connection {
+  id: number
+  remote: rpc.RemoteObject
+}
 
 export class CallbackStub extends rpc.RemoteObject {
   private onResult: (data: string) => void | undefined
@@ -45,15 +49,11 @@ export class ResultStub extends rpc.RemoteObject {
 }
 
 export default class EntryAbility extends FlutterAbility {
-  private connectId: number | undefined
   private sender: ChunkedSender = new ChunkedSender()
   private notificationManager: NotificationManager | undefined
-  private connecting: Promise<rpc.RemoteObject> | undefined
-  private unlock: (() => void) | undefined
-  private get lock(): Lock {
-    if (!AppStorage.has('ipc_lock')) AppStorage.setOrCreate('ipc_lock', new Lock())
-    return AppStorage.get('ipc_lock') as Lock
-  }
+  private connecting: Promise<Connection> | undefined
+  private disconnecting: Promise<void> | undefined
+  private onDisconnected: ((message: string) => void) | undefined
   
   configureFlutterEngine(flutterEngine: FlutterEngine): void {
     super.configureFlutterEngine(flutterEngine)
@@ -70,75 +70,58 @@ export default class EntryAbility extends FlutterAbility {
 
   onDestroy(): void {
     super.onDestroy()
-    this.connecting = undefined
+    this.disconnect()
     this.notificationManager?.unsubscribe()
-    if (this.unlock && this.connectId) {
-      this.context.disconnectServiceExtensionAbility(this.connectId).then(() => {
-        if (this.unlock) {
-          this.unlock()
-          this.unlock = undefined
-        }
-      })
-    } else {
-      this.lock.revoke(this.context.abilityInfo.name)
-    }
   }
 
-  private connect(): Promise<rpc.RemoteObject> {
-    const want: Want = {
-      bundleName: this.context.applicationInfo.name,
-      abilityName: 'VpnExtAbility',
-    }
-    return vpnExtension.startVpnExtensionAbility(want).then(() => {
-      return this.lock.acquire(this.context.abilityInfo.name).then((unlock: () => void) => {
-        const getProxy = (want: Want, context: common.UIAbilityContext, unlock: () => void): Promise<rpc.RemoteObject> => {
+  private connect(): Promise<Connection> {
+    return (this.disconnecting ?? Promise.resolve()).then(() => {
+      const want: Want = {
+        bundleName: this.context.applicationInfo.name,
+        abilityName: 'VpnExtAbility',
+      }
+      return vpnExtension.startVpnExtensionAbility(want).then(() => {
+        const getProxy = (want: Want, context: common.UIAbilityContext): Promise<Connection> => {
           return new Promise((resolve, reject) => {
-            this.connectId = context.connectServiceExtensionAbility(want, {
+            let id = -1
+            id = context.connectServiceExtensionAbility(want, {
               onConnect: (elementName: bundleManager.ElementName, remote: rpc.RemoteObject) => {
-                this.unlock = unlock
-                resolve(remote)
+                resolve({id, remote})
               },
               onDisconnect: (elementName: bundleManager.ElementName) => {
-                unlock()
-                this.unlock = undefined
                 this.connecting = undefined
-                this.connectId = undefined
+                if (this.disconnecting) {
+                  this.disconnecting.finally(() => {
+                    this.disconnecting = undefined
+                  })
+                } else {
+                  this.onDisconnected?.(`${elementName.abilityName} disconnected unexpectedly`)
+                }
               },
               onFailed: (code: number) => {
-                unlock()
                 this.connecting = undefined
-                this.connectId = undefined
                 reject(new Error(`connectServiceExtensionAbility failed: ${code}`))
               },
             } as common.ConnectOptions)
           })
         }
-        return getProxy(want, this.context, unlock)
+        return getProxy(want, this.context)
       })
     })
   }
 
   private ensureConnected(): Promise<rpc.RemoteObject> {
     if (!this.connecting) this.connecting = this.connect()
-    return this.connecting
+    return this.connecting.then((connection: Connection) => connection.remote)
   }
 
   private disconnect(): Promise<void> {
-    this.connecting = undefined
-    if (this.unlock && this.connectId) {
-      return this.context.disconnectServiceExtensionAbility(this.connectId).then(() => {
-        if (this.unlock) {
-          this.unlock()
-          this.unlock = undefined
-        }
-        const want: Want = {
-          bundleName: this.context.applicationInfo.name,
-          abilityName: 'VpnExtAbility',
-        }
-        return vpnExtension.stopVpnExtensionAbility(want)
+    if (this.connecting) {
+      return this.connecting.then((connection: Connection) => {
+        if (!this.disconnecting) this.disconnecting = this.context.disconnectServiceExtensionAbility(connection.id)
+        return this.disconnecting
       })
     } else {
-      this.lock.revoke(this.context.abilityInfo.name)
       return Promise.resolve()
     }
   }
@@ -224,5 +207,9 @@ export default class EntryAbility extends FlutterAbility {
         reply.reclaim()
       })
     })
+  }
+
+  setOnDisconnected(callback: (message: string) => void): void {
+    this.onDisconnected = callback
   }
 }
