@@ -714,6 +714,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Defined apps`
+  String get definedApps {
+    return Intl.message(
+      'Defined apps',
+      name: 'definedApps',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Package name`
+  String get packageName {
+    return Intl.message(
+      'Package name',
+      name: 'packageName',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Selected`
   String get selected {
     return Intl.message('Selected', name: 'selected', desc: '', args: []);
@@ -1204,6 +1224,26 @@ class AppLocalizations {
     return Intl.message(
       'When the app is in the background, the app is hidden from the recent task',
       name: 'excludeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove from recents`
+  String get keep {
+    return Intl.message(
+      'Remove from recents',
+      name: 'keep',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep the VPN service alive when the app is removed from recent tasks`
+  String get keepDesc {
+    return Intl.message(
+      'Keep the VPN service alive when the app is removed from recent tasks',
+      name: 'keepDesc',
       desc: '',
       args: [],
     );

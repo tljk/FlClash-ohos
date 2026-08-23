@@ -24,7 +24,7 @@ on Mobile:
 
 ## Features
 
-✈️ Multi-platform: Android, Windows, macOS and Linux
+✈️ Multi-platform: Android, Windows, macOS, Linux and OpenHarmony
 
 💻 Adaptive multiple screen sizes, Multiple color themes available
 
@@ -119,6 +119,18 @@ Support the following actions
 
            ```bash
            dart setup.dart macos
+           ```
+
+    - ohos
+
+        1. Install `DevEco Studio` with the OpenHarmony SDK
+
+        2. Set the `OHOS_NDK_HOME` environment variable
+
+        3. Run build script
+
+           ```bash
+           dart setup.dart ohos
            ```
 
 ## Star

@@ -37,10 +37,11 @@ body:
     attributes:
       label: 操作系统 / OS
       options:
-        - Android
-        - Windows
-        - MacOS
-        - Linux
+        - OpenHarmony
+        # - Android
+        # - Windows
+        # - MacOS
+        # - Linux
     validations:
       required: true
   - type: input

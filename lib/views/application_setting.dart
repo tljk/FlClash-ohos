@@ -158,8 +158,12 @@ class HiddenItem extends ConsumerWidget {
       appSettingProvider.select((state) => state.hidden),
     );
     return ListItem.switchItem(
-      title: Text(appLocalizations.exclude),
-      subtitle: Text(appLocalizations.excludeDesc),
+      title: Text(
+        system.isAndroid ? appLocalizations.exclude : appLocalizations.keep,
+      ),
+      subtitle: Text(
+        system.isAndroid ? appLocalizations.excludeDesc : appLocalizations.keepDesc,
+      ),
       delegate: SwitchDelegate(
         value: hidden,
         onChanged: (value) {
@@ -277,7 +281,7 @@ class ApplicationSettingView extends StatelessWidget {
       const MinimizeItem(),
       if (system.isDesktop) ...[const AutoLaunchItem(), const SilentLaunchItem()],
       const AutoRunItem(),
-      if (system.isAndroid) ...[const HiddenItem()],
+      if (system.isAndroid || system.isOhos) ...[const HiddenItem()],
       const AnimateTabItem(),
       const OpenLogsItem(),
       const CloseConnectionsItem(),

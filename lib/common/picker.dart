@@ -22,7 +22,7 @@ class Picker {
       initialDirectory: await appPath.downloadDirPath,
       bytes: bytes,
     );
-    if (!system.isAndroid && path != null) {
+    if (!system.isAndroid && !system.isOhos && path != null) {
       final file = File(path);
       await file.safeWriteAsBytes(bytes);
     }
@@ -34,7 +34,7 @@ class Picker {
     if (!await localFile.exists()) {
       await localFile.create(recursive: true);
     }
-    final bytes = Platform.isAndroid ? await localFile.readAsBytes() : null;
+    final bytes = Platform.isAndroid || system.isOhos ? await localFile.readAsBytes() : null;
     final path = await FilePicker.saveFile(
       fileName: fileName,
       initialDirectory: await appPath.downloadDirPath,

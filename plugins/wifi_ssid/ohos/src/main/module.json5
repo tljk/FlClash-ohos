@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "wifi_ssid",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}
