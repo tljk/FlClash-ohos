@@ -40,7 +40,9 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
     return SizedBox(
       height: getWidgetHeight(1),
       child: CommonCard(
-        onPressed: () {},
+        onPressed: () {
+          ref.read(networkDetectionProvider.notifier).startCheck();
+        },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

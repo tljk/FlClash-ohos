@@ -251,7 +251,7 @@ class _AddOrEditRuleDialogState extends State<AddOrEditRuleDialog> {
       return;
     }
     final rule = Rule(
-      id: widget.rule?.id ?? -1,
+      id: widget.rule?.id ?? snowflake.id,
       ruleAction: _ruleAction,
       content: _contentController.text,
       ruleTarget: _ruleTargetController.text,

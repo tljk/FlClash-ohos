@@ -2,7 +2,7 @@ import { common, wantAgent, WantAgent } from '@kit.AbilityKit'
 import { backgroundTaskManager } from '@kit.BackgroundTasksKit'
 import { commonEventManager } from "@kit.BasicServicesKit"
 import { Lock } from '../utils/Lock'
-import { RunState } from '../plugins/ServicePlugin'
+import { globalState, RunState } from '../GlobalState';
 
 export default class NotificationManager {
   private context: common.UIAbilityContext
@@ -11,10 +11,6 @@ export default class NotificationManager {
   private get lock(): Lock {
     if (!AppStorage.has('notification_lock')) AppStorage.setOrCreate('notification_lock', new Lock())
     return AppStorage.get('notification_lock') as Lock
-  }
-  private get runState(): RunState {
-    if (!AppStorage.has('run_state')) AppStorage.setOrCreate('run_state', RunState.stop)
-    return AppStorage.get('run_state') as RunState
   }
 
   constructor(context: common.UIAbilityContext) {
@@ -27,7 +23,7 @@ export default class NotificationManager {
   subscribe(): Promise<void> {
     return this.lock.acquire(this.context.abilityInfo.name).then((unlock: () => void) => {
       this.unlock = unlock
-      if (this.runState === RunState.start) this.startContinuousTask()
+      if (globalState.runState === RunState.start) this.startContinuousTask()
       return commonEventManager.subscribeToEvent(this.subscriber, (commonEventData: commonEventManager.CommonEventData) => {
         if (commonEventData.event === 'SERVICE_START') {
           this.startContinuousTask()

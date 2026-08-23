@@ -11,34 +11,12 @@ import { State, VpnOptions } from '../models/State'
 import { formProvider } from '@kit.FormKit';
 import { Want } from '@kit.AbilityKit';
 import { publishEvent } from '../utils/Event'
+import { globalState, RunState } from '../GlobalState';
 import EntryAbility from '../entryability/EntryAbility';
-
-export enum RunState {
-  start, pending, stop
-}
 
 export default class ServicePlugin implements FlutterPlugin, MethodCallHandler {
   private parent: EntryAbility
   private channel: MethodChannel | undefined
-  private state: State | undefined
-  private get runTime(): number {
-    if (!AppStorage.has('run_time')) AppStorage.setOrCreate('run_time', 0)
-    return AppStorage.get('run_time') as number
-  }
-  private set runTime(timestamp: number) {
-    AppStorage.setOrCreate('run_time', timestamp)
-  }
-  private get runState(): RunState {
-    if (!AppStorage.has('run_state')) AppStorage.setOrCreate('run_state', RunState.stop)
-    return AppStorage.get('run_state') as RunState
-  }
-  private set runState(state: RunState) {
-    AppStorage.setOrCreate('run_state', state)
-  }
-  private get excludeFromRecent(): boolean {
-    if (!AppStorage.has('exclude_recent')) AppStorage.setOrCreate('exclude_recent', false)
-    return AppStorage.get<boolean>('exclude_recent') as boolean
-  }
 
   constructor(entryAbility: EntryAbility) {
     this.parent = entryAbility
@@ -87,24 +65,24 @@ export default class ServicePlugin implements FlutterPlugin, MethodCallHandler {
       result.success(err.message ?? `${err}`)
     })
     this.parent.setOnDisconnected((message: string) => {
-      this.runTime = 0
-      this.runState = RunState.stop
+      globalState.runTime = 0
+      globalState.runState = RunState.stop
       this.channel?.invokeMethod("crash", message)
-      publishEvent('SERVICE_STOP', `${this.runTime}`)
+      publishEvent('SERVICE_STOP', `${globalState.runTime}`)
     })
   }
 
   private handleShutdown(result: MethodResult): void {
     this.parent.handleShutdown().finally(() => {
-      this.runTime = 0
-      this.runState = RunState.stop
+      globalState.runTime = 0
+      globalState.runState = RunState.stop
       result.success(true)
     })
   }
 
   private handleSyncState(call: MethodCall, result: MethodResult): void {
-    this.state = JSON.parse(call.args)
-    this.runState = this.runTime === 0 ? RunState.stop : RunState.start
+    globalState.state = JSON.parse(call.args) as State
+    globalState.runState = globalState.runTime === 0 ? RunState.stop : RunState.start
     result.success("")
   }
 
@@ -114,13 +92,13 @@ export default class ServicePlugin implements FlutterPlugin, MethodCallHandler {
   }
 
   private handleStart(result: MethodResult): void {
-    if (this.runState === RunState.stop) {
-      this.runState = RunState.pending
-      const options = this.state?.vpnOptions ?? new VpnOptions()
+    if (globalState.runState === RunState.stop) {
+      globalState.runState = RunState.pending
+      const options = globalState.state?.vpnOptions ?? new VpnOptions()
       const resultStub = new ResultStub("handleStart", (runTime: number) => {
-        this.runTime = runTime
-        this.runState = runTime !== 0 ? RunState.start : RunState.stop
-        if (this.excludeFromRecent) {
+        globalState.runTime = runTime
+        globalState.runState = runTime !== 0 ? RunState.start : RunState.stop
+        if (globalState.excludeFromRecent) {
           const want: Want = {
             bundleName: this.parent.context.applicationInfo.name,
             abilityName: 'FormExtAbility',
@@ -133,22 +111,22 @@ export default class ServicePlugin implements FlutterPlugin, MethodCallHandler {
           formProvider.openFormManager(want)
         }
       })
-      this.parent.handleStartService(options, this.runTime, resultStub).catch(() => {
-        this.runState = RunState.stop
+      this.parent.handleStartService(options, globalState.runTime, resultStub).catch(() => {
+        globalState.runState = RunState.stop
       })
     }
     result.success(true)
   }
 
   private handleStop(result: MethodResult): void {
-    if (this.runState === RunState.start) {
-      this.runState = RunState.pending
+    if (globalState.runState === RunState.start) {
+      globalState.runState = RunState.pending
       const resultStub = new ResultStub("handleStop", (runTime: number) => {
-        this.runTime = runTime
-        this.runState = RunState.stop
+        globalState.runTime = runTime
+        globalState.runState = RunState.stop
       })
       this.parent.handleStopService(resultStub).catch(() => {
-        this.runState = RunState.start
+        globalState.runState = RunState.start
       })
     }
     result.success(true)
@@ -156,9 +134,9 @@ export default class ServicePlugin implements FlutterPlugin, MethodCallHandler {
 
   private handleGetRunTime(result: MethodResult): void {
     this.parent.handleGetRunTime().then((runTime: number) => {
-      this.runTime = runTime
+      globalState.runTime = runTime
     }).finally(() => {
-      result.success(this.runTime)
+      result.success(globalState.runTime)
     })
   }
 }

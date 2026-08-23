@@ -479,10 +479,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: cabdd31cb7b446350e652fd087061da9c293488d
+      resolved-ref: d4e2a38192f1a36d46f4f7d1b0981ae9419f15ff
       url: "https://github.com/tljk/flutter_js.git"
     source: git
-    version: "0.8.3"
+    version: "0.8.7"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -1116,10 +1116,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "0c1588d7379fd8f2238d359538d9f1483cb53704"
+      resolved-ref: ae3ae64689f411d868a11b5293f1ab168bc5eff2
       url: "https://github.com/tljk/re-editor.git"
     source: git
-    version: "0.8.0"
+    version: "0.10.0"
   re_highlight:
     dependency: "direct main"
     description:

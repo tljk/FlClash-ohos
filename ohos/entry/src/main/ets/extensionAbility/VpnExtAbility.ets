@@ -65,10 +65,9 @@ export class ServiceStub extends rpc.RemoteObject {
       this.parent.handleGetRunTime(reply)
       return true
     } else if (code === RPCType.quickSetup) {
-      const initParams = this.reader.read(send)
-      if (initParams === null) return true
       const setupParams = this.reader.read(send)
       if (setupParams === null) return true
+      const initParams = send.readString()
       const remote = send.readRemoteObject() as rpc.RemoteObject
       this.parent.handleQuickSetup(initParams, setupParams, remote)
       return true
@@ -278,7 +277,6 @@ export default class VpnExtAbility extends VpnExtensionAbility {
       this.sendResult(remote, this.runTime)
       publishEvent('SERVICE_START', `${this.runTime}`)
     }
-
   }
 
   handleStopService(remote: rpc.RemoteObject): void {
