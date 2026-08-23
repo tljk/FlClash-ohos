@@ -45,6 +45,7 @@ jobs:
         if: matrix.platform == 'ohos'
         run: |
           git clone -b oh-3.41.9-release --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
+          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.41.10
           echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
           echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
           echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
@@ -164,6 +165,7 @@ jobs:
         if: matrix.platform == 'ohos'
         run: |
           git clone -b oh-3.41.9-release --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
+          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.41.10
           echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
           echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
           echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
@@ -184,60 +186,60 @@ jobs:
           path: ./dist
           overwrite: true
 
-  changelog:
-    runs-on: ubuntu-latest
-    needs: [ build ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        if: ${{ env.IS_STABLE == 'true' }}
-        with:
-          fetch-depth: 0
-          ref: refs/heads/main
-      - name: Generate
-        if: ${{ env.IS_STABLE == 'true' }}
-        run: |
-          last_ver=$(grep -m1 '^## ' CHANGELOG.md 2>/dev/null | sed 's/^## //')
-          
-          tags=($(git tag --merged HEAD --sort=-creatordate))
-          
-          temp="NEW_CHANGELOG.md" > "$temp"
-          
-          for i in "${!tags[@]}"; do
-              curr="${tags[i]}"
-              [[ "$curr" == "$last_ver" ]] && break
-          
-              prev="${tags[i+1]}"
-              range="${prev:+$prev..}$curr"
-          
-              echo -e "## $curr\n" >> "$temp"
-              git log --no-merges --pretty=format:"%B" "$range" | \
-              awk '!/Update changelog/ && NF {print "- " $0 "\n"}' >> "$temp"
-          done
-          [ -f CHANGELOG.md ] && cat CHANGELOG.md >> "$temp"
-          
-          mv "$temp" CHANGELOG.md
-
-      - name: Commit
-        if: ${{ env.IS_STABLE == 'true' }}
-        run: |
-          git add CHANGELOG.md
-          if ! git diff --cached --quiet; then
-            echo "Commit pushing"
-            git config --local user.email "chen08209@gmail.com"
-            git config --local user.name "chen08209"
-            git commit -m "Update changelog"
-            git push
-            if [ $? -eq 0 ]; then
-              echo "Push succeeded"
-            else
-              echo "Push failed"
-              exit 1
-            fi
-          fi
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # changelog:
+  #   runs-on: ubuntu-latest
+  #   needs: [ build ]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       if: ${{ env.IS_STABLE == 'true' }}
+  #       with:
+  #         fetch-depth: 0
+  #         ref: refs/heads/main
+  #     - name: Generate
+  #       if: ${{ env.IS_STABLE == 'true' }}
+  #       run: |
+  #         last_ver=$(grep -m1 '^## ' CHANGELOG.md 2>/dev/null | sed 's/^## //')
+  
+  #         tags=($(git tag --merged HEAD --sort=-creatordate))
+  
+  #         temp="NEW_CHANGELOG.md" > "$temp"
+  
+  #         for i in "${!tags[@]}"; do
+  #             curr="${tags[i]}"
+  #             [[ "$curr" == "$last_ver" ]] && break
+  
+  #             prev="${tags[i+1]}"
+  #             range="${prev:+$prev..}$curr"
+  
+  #             echo -e "## $curr\n" >> "$temp"
+  #             git log --no-merges --pretty=format:"%B" "$range" | \
+  #             awk '!/Update changelog/ && NF {print "- " $0 "\n"}' >> "$temp"
+  #         done
+  #         [ -f CHANGELOG.md ] && cat CHANGELOG.md >> "$temp"
+  
+  #         mv "$temp" CHANGELOG.md
+  
+  #     - name: Commit
+  #       if: ${{ env.IS_STABLE == 'true' }}
+  #       run: |
+  #         git add CHANGELOG.md
+  #         if ! git diff --cached --quiet; then
+  #           echo "Commit pushing"
+  #           git config --local user.email "chen08209@gmail.com"
+  #           git config --local user.name "chen08209"
+  #           git commit -m "Update changelog"
+  #           git push
+  #           if [ $? -eq 0 ]; then
+  #             echo "Push succeeded"
+  #           else
+  #             echo "Push failed"
+  #             exit 1
+  #           fi
+  #         fi
+  
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   upload:
     permissions: write-all
