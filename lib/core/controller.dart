@@ -16,7 +16,7 @@ class CoreController {
   late CoreHandlerInterface _interface;
 
   CoreController._internal() {
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       _interface = coreLib!;
     } else {
       _interface = coreService!;

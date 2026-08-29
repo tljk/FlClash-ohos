@@ -9,6 +9,7 @@ const _allTargets = <String, String>{
   'linux': 'deb', // appimage + rpm added for amd64 only
   'macos': 'dmg',
   'windows': 'exe,zip',
+  'ohos': 'hap,app',
 };
 
 const _androidFlutterTarget = {
@@ -43,9 +44,9 @@ Future<void> main(List<String> args) async {
 
   final platform = rest.isNotEmpty ? rest.first : host;
 
-  if (platform != host && platform != 'android') {
+  if (platform != host && platform != 'android' && platform != 'ohos') {
     stderr.writeln(
-      'Cannot build "$platform" on $hostOs. Allowed: $host, android',
+      'Cannot build "$platform" on $hostOs. Allowed: $host, android, ohos',
     );
     _showHelp(parser);
     exit(1);
@@ -80,7 +81,7 @@ ArgParser createSetupArgParser() {
     )
     ..addOption(
       'targets',
-      valueHelp: 'exe,zip,dmg,apk,...',
+      valueHelp: 'exe,zip,dmg,apk,hap,app,...',
       help: 'Package targets (default: all for platform)',
     )
     ..addOption(
@@ -107,6 +108,9 @@ List<String> createFlutterBuildArgs({
   ];
   if (platform == 'android') {
     flutterBuildArgs.add('split-per-abi');
+  }
+  if (platform == 'ohos') {
+    flutterBuildArgs.add('no-codesign');
   }
   return flutterBuildArgs;
 }
@@ -149,7 +153,7 @@ Future<int> _package(
     verbose: verbose,
   );
   final descriptionArgs = <String>[];
-  if (platform != 'android') {
+  if (platform != 'android' && platform != 'ohos') {
     descriptionArgs.addAll(['--description', arch]);
   }
 
@@ -162,7 +166,7 @@ Future<int> _package(
     'activate',
     '-s',
     'git',
-    'https://github.com/chen08209/flutter_distributor.git',
+    'https://github.com/tljk/flutter_distributor.git',
     '--git-ref',
     'FlClash',
     '--git-path',

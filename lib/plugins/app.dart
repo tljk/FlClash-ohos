@@ -104,4 +104,4 @@ class App {
   }
 }
 
-final app = system.isAndroid ? App() : null;
+final app = system.isAndroid || system.isOhos ? App() : null;

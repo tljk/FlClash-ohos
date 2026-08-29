@@ -402,6 +402,7 @@ func handleSideLoadExternalProvider(providerName string, data []byte, fn func(va
 
 func handleSuspend(suspended bool) bool {
 	if suspended {
+		log.Infoln("[APP] TUN suspended")
 		tunnel.OnSuspend()
 	} else {
 		tunnel.OnRunning()

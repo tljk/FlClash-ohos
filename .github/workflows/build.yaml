@@ -12,18 +12,45 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: ohos
+
+          # - platform: android
+          # - platform: windows
+          # - platform: linux
+          # - platform: macos
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
+      - name: Setup OpenHarmony SDK
+        if: matrix.platform == 'ohos'
+        uses: ErBWs/setup-ohos@v2.0.0
+        with:
+          version: 26.0.0.621
+          cache: true
+
       - name: Setup Flutter
+        if: matrix.platform != 'ohos'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
+      - name: Setup Flutter With OpenHarmony
+        if: matrix.platform == 'ohos'
+        run: |
+          git clone -b 3.44.9+ohos-0.0.1-canary1 --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
+          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.44.10
+          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
+          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
 
       - name: Install dependencies
         run: flutter pub get
@@ -40,26 +67,29 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: android
+          - platform: ohos
             os: ubuntu-latest
-          - platform: windows
-            os: Windows-2022
-            arch: amd64
-          - platform: linux
-            os: ubuntu-22.04
-            arch: amd64
-          - platform: macos
-            os: macos-15-intel
-            arch: amd64
-          - platform: macos
-            os: macos-latest
-            arch: arm64
-          - platform: windows
-            os: windows-11-arm
-            arch: arm64
-          - platform: linux
-            os: ubuntu-24.04-arm
-            arch: arm64
+
+          # - platform: android
+          #   os: ubuntu-latest
+          # - platform: windows
+          #   os: Windows-2022
+          #   arch: amd64
+          # - platform: linux
+          #   os: ubuntu-22.04
+          #   arch: amd64
+          # - platform: macos
+          #   os: macos-15-intel
+          #   arch: amd64
+          # - platform: macos
+          #   os: macos-latest
+          #   arch: arm64
+          # - platform: windows
+          #   os: windows-11-arm
+          #   arch: arm64
+          # - platform: linux
+          #   os: ubuntu-24.04-arm
+          #   arch: arm64
 
     steps:
       - name: Setup rust
@@ -93,17 +123,42 @@ jobs:
           go-version: '1.26.4'
           cache-dependency-path: |
             core/go.sum
+      - name: Setup OpenHarmony Go
+        if: startsWith(matrix.platform,'ohos')
+        run: |
+          git clone -b release-branch.go1.24 https://gitcode.com/openharmony-sig/ohos_golang_go.git "$HOME/ohos-go"
+          cd "$HOME/ohos-go/src"
+          ./make.bash
+          echo "GOROOT=$HOME/ohos-go" >> "$GITHUB_ENV"
+          echo "$HOME/ohos-go/bin" >> "$GITHUB_PATH"
 
       - name: Enable git long paths (Windows)
         if: startsWith(matrix.os, 'windows')
         run: git config --global core.longpaths true
 
+      - name: Setup OpenHarmony SDK
+        if: startsWith(matrix.platform,'ohos')
+        uses: ErBWs/setup-ohos@v2.0.0
+        with:
+          version: 26.0.0.621
+          cache: true
+
       - name: Setup Flutter
+        if: ${{ matrix.platform != 'ohos' }}
         uses: subosito/flutter-action@v2
         with:
           channel: master
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
+      - name: Setup Flutter With OpenHarmony
+        if: matrix.platform == 'ohos'
+        run: |
+          git clone -b 3.44.9+ohos-0.0.1-canary1 --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
+          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.44.10
+          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
+          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
 
       - name: Setup Xcode
         if: startsWith(matrix.platform,'macos')
@@ -135,7 +190,7 @@ jobs:
           overwrite: true
 
   changelog:
-    if: ${{ !contains(github.ref, '-') }}
+    if: false
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -214,14 +269,24 @@ jobs:
           pattern: artifact-*
           merge-multiple: true
 
+      - name: Exclude .app
+        run: rm -f ./dist/*.app
+
+      - name: Rename assets
+        run: |
+          version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          shortVersion=$(grep -m1 '^version:' pubspec.yaml | sed -E 's/^version:[[:space:]]*//; s/\+.*$//')
+          for f in ./dist/FlClash-"$shortVersion"-*; do
+            [ -e "$f" ] || continue
+            newName=$(basename "$f" | sed "s/^FlClash-$shortVersion-/FlClash-$version-/")
+            mv "$f" "./dist/$newName"
+          done
+
       - name: Generate release.md
         run: |
           tags=($(git tag --merged HEAD --sort=-creatordate))
-          preTag=$(curl -s "https://api.github.com/repos/chen08209/FlClash/releases/latest" | \
-          sed -nE 's/.*"tag_name": "([^"]+)".*/\1/p')
-          
-          [ -z "$preTag" ] && preTag=""
-          
+          preTag=$(git describe --tags --abbrev=0 "${tags[0]}^" 2>/dev/null)
+
           out="release.md" > "$out"
           
           for i in "${!tags[@]}"; do
@@ -235,6 +300,7 @@ jobs:
             awk '!/Update changelog/ && NF {print "- " $0 "\n"}' >> "$out"
           done
       - name: Push to telegram
+        if: false
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TAG: ${{ github.ref_name }}
@@ -263,7 +329,7 @@ jobs:
           body_path: './release.md'
 
       - name: Create Homebrew Cask Source Dir
-        if: ${{ env.IS_STABLE == 'true' }}
+        if: false
         run: |
           version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
           arm_sha=$(sha256sum "./dist/FlClash-${version}-macos-arm64.dmg" | awk '{print $1}')
@@ -277,7 +343,7 @@ jobs:
             ./.github/homebrew_cask_template.rb > ./brew/Casks/flclash.rb
 
       - name: Push to Homebrew tap
-        if: ${{ env.IS_STABLE == 'true' }}
+        if: false
         uses: cpina/github-action-push-to-another-repository@v1.7.2
         env:
           SSH_DEPLOY_KEY: ${{ secrets.HOMEBREW_SSH_DEPLOY_KEY }}
@@ -292,14 +358,14 @@ jobs:
           target-directory: /
 
       - name: Create Fdroid Source Dir
-        if: ${{ env.IS_STABLE == 'true' }}
+        if: false
         run: |
           mkdir -p ./tmp
           cp ./dist/*android-arm64-v8a* ./tmp/ || true
           echo "Files copied successfully"
 
       - name: Push to fdroid repo
-        if: ${{ env.IS_STABLE == 'true' }}
+        if: false
         uses: cpina/github-action-push-to-another-repository@v1.7.2
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
