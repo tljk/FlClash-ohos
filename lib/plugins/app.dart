@@ -102,6 +102,16 @@ class App {
     if (!Platform.isAndroid) return false;
     return methodChannel.invokeMethod<bool>('openAppSettings');
   }
+
+  Future<bool?> startBackgroundRunning() async {
+    if (!Platform.isOhos) return false;
+    return methodChannel.invokeMethod<bool>('startBackgroundRunning');
+  }
+
+  Future<bool?> stopBackgroundRunning() async {
+    if (!Platform.isOhos) return false;
+    return methodChannel.invokeMethod<bool>('stopBackgroundRunning');
+  }
 }
 
 final app = system.isAndroid || system.isOhos ? App() : null;

@@ -78,7 +78,7 @@ export default class NetworkManager {
       this.netConnection.unregister((err: Error) => {
         if (err) {
           reject(err)
-        }else {
+        } else {
           resolve()
         }
       })

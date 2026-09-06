@@ -218,6 +218,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.1.2"
+  code_assets:
+    dependency: transitive
+    description:
+      name: code_assets
+      sha256: bf394f466ba9205f1812a0433b392d6af280f155f56651eda7c18cc32ed493b8
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.2.1"
   code_builder:
     dependency: transitive
     description:
@@ -367,11 +375,12 @@ packages:
   dynamic_color:
     dependency: "direct main"
     description:
-      name: dynamic_color
-      sha256: "4aeb76de323e8eb660bab5557d826ad7ebbf1434a598f0c6aa8a11a9696a6757"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.9.0"
+      path: "packages/dynamic_color"
+      ref: dev
+      resolved-ref: "1b07b86212b3f4ca6404ce8a279dca052527d229"
+      url: "https://gitcode.com/CPF-Flutter/fluttertpc_dynamic_color.git"
+    source: git
+    version: "1.8.1"
   emoji_regex:
     dependency: "direct main"
     description:
@@ -504,14 +513,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_platform_utils:
-    dependency: transitive
-    description:
-      name: flutter_platform_utils
-      sha256: cb06a696d0b027edb7a4e95527dde847f5c4b7bd4f90e894336f58fefe5561ce
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -610,6 +611,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.2.0"
+  hooks:
+    dependency: transitive
+    description:
+      name: hooks
+      sha256: "9a62a50b50b769a737bc0a8ff381f333529df3ab746b2f6b02e83760231455ba"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.2"
   hotkey_manager:
     dependency: "direct main"
     description:
@@ -942,6 +951,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.5"
+  native_toolchain_c:
+    dependency: transitive
+    description:
+      name: native_toolchain_c
+      sha256: f9c168717100ae6d9fee9ffb0be379bf1f8b26b0f6bcbd4fdddcd931993a6a72
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.19.2"
   navigator_resizable:
     dependency: transitive
     description:
@@ -1153,6 +1170,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.1.0"
+  record_use:
+    dependency: transitive
+    description:
+      name: record_use
+      sha256: "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.6.0"
   reorderable_grid:
     dependency: "direct main"
     description:
@@ -1467,20 +1492,19 @@ packages:
     dependency: "direct overridden"
     description:
       path: sqlite3
-      ref: "sqlite3-2.9.4"
-      resolved-ref: "99dcc4c7bf2cc3f658d025b82dc320e5fca12ef9"
-      url: "https://github.com/SageMik/sqlite3-ohos.dart"
+      ref: main
+      resolved-ref: b9f5614768384be50003bd1a0ebbd02c7a945967
+      url: "https://github.com/tljk/sqlite3.dart"
     source: git
-    version: "2.9.4"
+    version: "3.4.0"
   sqlite3_flutter_libs:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: sqlite3_flutter_libs
-      ref: "sqlite3-2.9.4"
-      resolved-ref: "99dcc4c7bf2cc3f658d025b82dc320e5fca12ef9"
-      url: "https://github.com/SageMik/sqlite3-ohos.dart"
-    source: git
-    version: "0.5.40"
+      name: sqlite3_flutter_libs
+      sha256: eeb9e3a45207649076b808f8a5a74d68770d0b7f26ccef6d5f43106eee5375ad
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.42"
   sqlparser:
     dependency: transitive
     description:

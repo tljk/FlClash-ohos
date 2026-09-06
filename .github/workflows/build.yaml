@@ -32,7 +32,7 @@ jobs:
         if: matrix.platform == 'ohos'
         uses: ErBWs/setup-ohos@v2.0.0
         with:
-          version: 26.0.0.621
+          version: 26.0.0.821
           cache: true
 
       - name: Setup Flutter
@@ -47,6 +47,7 @@ jobs:
         run: |
           git clone -b 3.44.9+ohos-0.0.1-canary1 --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
           git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.44.10
+          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" apply "$GITHUB_WORKSPACE/.github/flutter_ohos.patch"
           echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
           echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
           echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
@@ -140,7 +141,7 @@ jobs:
         if: startsWith(matrix.platform,'ohos')
         uses: ErBWs/setup-ohos@v2.0.0
         with:
-          version: 26.0.0.621
+          version: 26.0.0.821
           cache: true
 
       - name: Setup Flutter
@@ -155,6 +156,7 @@ jobs:
         run: |
           git clone -b 3.44.9+ohos-0.0.1-canary1 --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
           git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.44.10
+          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" apply "$GITHUB_WORKSPACE/.github/flutter_ohos.patch"
           echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
           echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
           echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"

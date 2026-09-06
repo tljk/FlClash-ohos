@@ -45,6 +45,12 @@ class _LogsViewState extends ConsumerState<LogsView> {
     return [
       IconButton(
         onPressed: () {
+          _handleClear();
+        },
+        icon: const Icon(Icons.delete_outline),
+      ),
+      IconButton(
+        onPressed: () {
           _handleExport();
         },
         icon: const Icon(Icons.save_as_outlined),
@@ -67,6 +73,10 @@ class _LogsViewState extends ConsumerState<LogsView> {
     _logsStateNotifier.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _handleClear() {
+    globalState.container.read(logsProvider.notifier).clear();
   }
 
   Future<void> _handleExport() async {

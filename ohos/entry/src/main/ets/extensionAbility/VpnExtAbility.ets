@@ -6,7 +6,6 @@ import { util } from '@kit.ArkTS'
 import { setEventListener, invokeAction, startTUN, stopTun, forceGC, suspend, updateDns, quickSetup } from 'core'
 import { AccessControlMode, VpnOptions } from '../models/State'
 import { ChunkedSender, ChunkedReader } from '../utils/Rpc'
-import { publishEvent } from '../utils/Event'
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import PowerManager from '../managers/PowerManager'
 import NetworkManager from '../managers/NetworkManager'
@@ -263,7 +262,6 @@ export default class VpnExtAbility extends VpnExtensionAbility {
         this.powerManager?.subscribe(suspend)
         this.networkManager?.subscribe(updateDns)
         this.runTime = runTime !== 0 ? runTime : Date.now()
-        publishEvent('SERVICE_START', `${this.runTime}`)
       }).catch((err: Error) => {
         console.log(`Call startTUN failed <= ${err.message ?? err}`)
       }).finally(() => {
@@ -275,7 +273,6 @@ export default class VpnExtAbility extends VpnExtensionAbility {
       this.networkManager?.subscribe(updateDns)
       this.runTime = runTime !== 0 ? runTime : Date.now()
       this.sendResult(remote, this.runTime)
-      publishEvent('SERVICE_START', `${this.runTime}`)
     }
   }
 
@@ -287,7 +284,6 @@ export default class VpnExtAbility extends VpnExtensionAbility {
     this.networkManager?.unsubscribe()
     this.runTime = 0
     this.sendResult(remote, this.runTime)
-    publishEvent('SERVICE_STOP', `${this.runTime}`)
   }
 
   handleGetRunTime(reply: rpc.MessageSequence): void {

@@ -1,7 +1,7 @@
 name: fl_clash
 description: A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
 publish_to: 'none'
-version: 0.8.94+2026082901
+version: 0.8.94+2026090601
 environment:
   sdk: '>=3.8.0 <4.0.0'
 
@@ -74,7 +74,7 @@ dependencies:
       url: https://github.com/chen08209/yaml_writer
       ref: master
   super_sliver_list: ^0.4.1
-  drift: 2.31.0
+  drift: ^2.31.0
   drift_flutter: ^0.2.8
   fractional_indexing: ^1.0.0
   reorderable_grid: ^1.0.13
@@ -86,14 +86,9 @@ dependencies:
 dependency_overrides:
   sqlite3:
     git:
-      url: https://github.com/SageMik/sqlite3-ohos.dart
+      url: https://github.com/tljk/sqlite3.dart
       path: sqlite3
-      ref: sqlite3-2.9.4
-  sqlite3_flutter_libs:
-    git:
-      url: https://github.com/SageMik/sqlite3-ohos.dart
-      path: sqlite3_flutter_libs
-      ref: sqlite3-2.9.4
+      ref: main
   device_info_plus:
     git:
       url: https://github.com/tljk/plus_plugins.git
@@ -154,6 +149,11 @@ dependency_overrides:
     git:
       url: https://github.com/tljk/smooth_sheets.git
       ref: main
+  dynamic_color:
+    git:
+      url: https://gitcode.com/CPF-Flutter/fluttertpc_dynamic_color.git
+      path: packages/dynamic_color
+      ref: dev
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -165,7 +165,7 @@ dev_dependencies:
   riverpod_generator: ^4.0.3
   riverpod_lint: ^3.1.3
 
-  drift_dev: 2.31.0
+  drift_dev: ^2.31.0
   intl_utils: ^2.8.14
   test: ^1.30.0
   mocktail: ^1.0.4
@@ -194,3 +194,8 @@ flutter_intl:
   class_name: AppLocalizations
   arb_dir: arb
   output_dir: lib/l10n
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3
+      url_pattern: "https://github.com/tljk/sqlite3.dart/releases/download/$RELEASE_TAG/$FILENAME"

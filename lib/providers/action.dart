@@ -147,7 +147,10 @@ class SetupAction extends _$SetupAction {
     ref.read(commonActionProvider.notifier).updateTraffic();
     if (!ref.read(suspendProvider)) {
       await coreController.startListener();
+    } else {
+      await coreController.stopListener();
     }
+    await app?.startBackgroundRunning();
     _updateTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       ref.read(commonActionProvider.notifier).updateRunTime();
       ref.read(commonActionProvider.notifier).updateTraffic();
@@ -163,6 +166,7 @@ class SetupAction extends _$SetupAction {
     _updateTimer?.cancel();
     _updateTimer = null;
     await coreController.stopListener();
+    await app?.stopBackgroundRunning();
   }
 
   void handleCrash() {
@@ -170,6 +174,7 @@ class SetupAction extends _$SetupAction {
     _updateTimer?.cancel();
     _updateTimer = null;
     ref.read(runTimeProvider.notifier).value = null;
+    app?.stopBackgroundRunning();
   }
 
   Future<void> initStatus() async {

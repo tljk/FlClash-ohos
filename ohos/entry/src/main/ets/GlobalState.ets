@@ -30,6 +30,16 @@ export class GlobalState {
     if (!AppStorage.has('exclude_recent')) AppStorage.setOrCreate('exclude_recent', false)
     return AppStorage.get<boolean>('exclude_recent') as boolean
   }
+  set excludeFromRecent(state: boolean) {
+    AppStorage.setOrCreate('exclude_recent', state)
+  }
+  get excludeState(): boolean {
+    if (!AppStorage.has('exclude_state')) AppStorage.setOrCreate('exclude_state', false)
+    return AppStorage.get<boolean>('exclude_state') as boolean
+  }
+  set excludeState(state: boolean) {
+    AppStorage.setOrCreate('exclude_state', state)
+  }
 }
 
 export const globalState = new GlobalState()

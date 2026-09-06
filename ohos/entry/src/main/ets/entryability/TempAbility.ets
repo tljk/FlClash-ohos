@@ -36,7 +36,7 @@ export default class TempAbility extends UIAbility {
   }
 
   onCreate(): void {
-    if (globalState.runState === RunState.stop || !globalState.excludeFromRecent) {
+    if (!globalState.excludeFromRecent) {
       this.context.terminateSelf()
     } else {
       this.notificationManager = new NotificationManager(this.context)
@@ -50,6 +50,7 @@ export default class TempAbility extends UIAbility {
       })
 
       if (!this.connecting) this.connecting = this.connect()
+      globalState.excludeState = true
     }
   }
 
@@ -57,6 +58,7 @@ export default class TempAbility extends UIAbility {
     this.disconnect()
     this.notificationManager?.unsubscribe()
     commonEventManager.unsubscribe(this.subscriber)
+    globalState.excludeState = false
   }
 
   private connect(setup?: boolean): Promise<Connection> {
