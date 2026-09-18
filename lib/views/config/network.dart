@@ -344,7 +344,7 @@ class NetworkListView extends StatelessWidget {
           items: [
             if (!system.isOhos) const VpnSystemProxyItem(),
             if (!system.isOhos) const BypassDomainItem(),
-            if (!system.isOhos) const AllowBypassItem(),
+            const AllowBypassItem(),
             const Ipv6Item(),
             const DNSHijackingItem(),
           ],

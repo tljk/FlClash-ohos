@@ -123,7 +123,7 @@ export default class VpnExtAbility extends VpnExtensionAbility {
 
   private toRouteInfo(cidr: string, family: number): vpnExtension.RouteInfo {
     const destination = this.toLinkAddress(cidr, family)
-    const gateway: connection.NetAddress = { address: family === 2 ? '::' : '0.0.0.0', family }
+    const gateway: connection.NetAddress = { address: '', family }
     return {
       interface: '',
       destination,
@@ -158,7 +158,7 @@ export default class VpnExtAbility extends VpnExtensionAbility {
       mtu: 9000,
       isIPv4Accepted: true,
       isIPv6Accepted: options.ipv6,
-      isBlocking: false,
+      isBlocking: !options.allowBypass,
     }
 
     const accessControl = options.accessControlProps

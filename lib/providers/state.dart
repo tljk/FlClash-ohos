@@ -606,9 +606,17 @@ SharedState sharedState(Ref ref) {
   final bypassDomain = ref.watch(
     networkSettingProvider.select((state) => state.bypassDomain),
   );
+  final routeMode = ref.watch(
+    networkSettingProvider.select((state) => state.routeMode),
+  );
   final clashConfigVM2 = ref.watch(
     patchClashConfigProvider.select(
       (state) => VM2(state.tun.stack.name, state.mixedPort),
+    ),
+  );
+  final routeAddress = ref.watch(
+    patchClashConfigProvider.select(
+      (state) => state.tun.getRealTun(routeMode).routeAddress,
     ),
   );
   final vpnSetting = ref.watch(vpnSettingProvider);
@@ -637,6 +645,7 @@ SharedState sharedState(Ref ref) {
       accessControlProps: vpnSetting.accessControlProps,
       allowBypass: vpnSetting.allowBypass,
       bypassDomain: bypassDomain,
+      routeAddress: routeAddress,
     ),
   );
 }
