@@ -107,7 +107,6 @@ const defaultBypassPrivateRouteAddress = [
   'f800::/6',
   'fe00::/9',
   'fec0::/10',
-  '172.17.0.0/24',
 ];
 
 @freezed
