@@ -39,6 +39,7 @@ class GlobalState {
   String? lastConfigMd5;
   VpnState? lastVpnState;
   bool isAttach = false;
+  String? pendingCrashMessage;
 
   GlobalState._internal();
 
@@ -292,7 +293,10 @@ class GlobalState {
     if (res != true) {
       return;
     }
-    launchUrl(Uri.parse(url));
+    launchUrl(
+      Uri.parse(url),
+      mode: Platform.isOhos ? LaunchMode.externalApplication : LaunchMode.platformDefault,
+    );
   }
 
   Future<void> attach() async {

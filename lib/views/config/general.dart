@@ -672,7 +672,7 @@ final generalItems = <Widget>[
   const AllowLanItem(),
   const UnifiedDelayItem(),
   const AppendSystemDNSItem(),
-  const FindProcessItem(),
+  if (!system.isOhos) const FindProcessItem(),
   const TcpConcurrentItem(),
   const GeodataLoaderItem(),
   const ExternalControllerItem(),

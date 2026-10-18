@@ -91,6 +91,44 @@ class BuildAndroidCommand extends BuildCommand {
   }
 }
 
+class BuildOpenHarmonyCommand extends BuildCommand {
+  BuildOpenHarmonyCommand() {
+    argParser.addOption(
+      'arch',
+      valueHelp: 'arm,arm64,amd64',
+      help: 'Target architecture (omit to build all)',
+    );
+    argParser.addOption(
+      'target-platform',
+      valueHelp: 'openharmony-arm,openharmony-arm64,openharmony-x64',
+      help: 'Flutter target platform list (omit to build all)',
+    );
+  }
+
+  @override
+  final name = 'ohos';
+
+  @override
+  final description = 'Build OpenHarmony Go core (c-shared library)';
+
+  @override
+  Future<void> runBuildCommand() async {
+    final archName = argResults?['arch'] as String?;
+    final flutterTargetPlatforms = argResults?['target-platform'] as String?;
+    final config = BuildConfig.load(rootDir: _rootDir);
+
+    final targets = Target.resolveOpenHarmonyTargets(
+      archName: archName,
+      flutterTargetPlatforms: flutterTargetPlatforms,
+    );
+
+    final builder = GoBuilder(rootDir: _rootDir, config: config);
+    final corePaths = await builder.buildAll(targets);
+
+    _log.info('Build complete: $corePaths');
+  }
+}
+
 class BuildLinuxCommand extends BuildCommand {
   BuildLinuxCommand() {
     argParser.addOption(
@@ -228,7 +266,8 @@ Future<void> runMain(List<String> args) async {
       ..addCommand(BuildAndroidCommand())
       ..addCommand(BuildLinuxCommand())
       ..addCommand(BuildWindowsCommand())
-      ..addCommand(BuildMacosCommand());
+      ..addCommand(BuildMacosCommand())
+      ..addCommand(BuildOpenHarmonyCommand());
 
     final topResults = runner.parse(args);
     _rootDir = (topResults['root-dir'] as String?) ?? _findProjectRoot();

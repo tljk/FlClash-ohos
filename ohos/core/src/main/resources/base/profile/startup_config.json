@@ -1,0 +1,11 @@
+{
+  "startupTasks": [],
+  "appPreloadHintStartupTasks": [
+    {
+      "name": "libcore",
+      "srcEntry": "libcore.so",
+      "runOnThread": "taskPool",
+      "excludeFromAutoStart": true
+    }
+  ]
+}

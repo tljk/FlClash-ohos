@@ -1,0 +1,24 @@
+diff --git a/packages/flutter_tools/lib/src/build_system/targets/ohos.dart b/packages/flutter_tools/lib/src/build_system/targets/ohos.dart
+index 845f4d23..a55c2f1c 100644
+--- a/packages/flutter_tools/lib/src/build_system/targets/ohos.dart
++++ b/packages/flutter_tools/lib/src/build_system/targets/ohos.dart
+@@ -8,6 +8,7 @@ import '../../artifacts.dart';
+ import '../../base/build.dart';
+ import '../../base/deferred_component.dart';
+ import '../../build_info.dart';
++import '../../devfs.dart';
+ import '../../globals.dart' as globals show xcode;
+ import '../../isolated/native_assets/dart_hook_result.dart';
+ import '../build_system.dart';
+@@ -323,6 +324,11 @@ abstract class OhosAssetBundle extends Target {
+       targetPlatform: TargetPlatform.ohos,
+       buildMode: buildMode,
+       flavor: environment.defines[kFlavor],
++      additionalContent: <String, DevFSContent>{
++        'NativeAssetsManifest.json': DevFSFileContent(
++          environment.buildDir.childFile('native_assets.json'),
++        ),
++      },
+     );
+     final depfileService = DepfileService(
+       fileSystem: environment.fileSystem,

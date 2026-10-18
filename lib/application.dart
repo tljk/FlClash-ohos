@@ -33,6 +33,7 @@ class ApplicationState extends ConsumerState<Application> {
       TargetPlatform.windows: commonSharedXPageTransitions,
       TargetPlatform.linux: commonSharedXPageTransitions,
       TargetPlatform.macOS: commonSharedXPageTransitions,
+      TargetPlatform.ohos: commonSharedXPageTransitions,
     },
   );
 
