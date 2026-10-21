@@ -39,6 +39,29 @@ class Target {
     flutterPlatform: 'android-x64',
   );
 
+  // --- OpenHarmony (c-shared library) ---
+  static const openHarmonyArm = Target(
+    goos: 'openharmony',
+    goarch: 'arm',
+    abi: 'armeabi-v7a',
+    isLib: true,
+    flutterPlatform: 'openharmony-arm',
+  );
+  static const openHarmonyArm64 = Target(
+    goos: 'openharmony',
+    goarch: 'arm64',
+    abi: 'arm64-v8a',
+    isLib: true,
+    flutterPlatform: 'openharmony-arm64',
+  );
+  static const openHarmonyAmd64 = Target(
+    goos: 'openharmony',
+    goarch: 'amd64',
+    abi: 'x86_64',
+    isLib: true,
+    flutterPlatform: 'openharmony-x64',
+  );
+
   // --- macOS (executable) ---
   static const macosArm64 = Target(goos: 'darwin', goarch: 'arm64');
   static const macosAmd64 = Target(goos: 'darwin', goarch: 'amd64');
@@ -55,6 +78,9 @@ class Target {
     androidArm,
     androidArm64,
     androidAmd64,
+    openHarmonyArm,
+    openHarmonyArm64,
+    openHarmonyAmd64,
     macosArm64,
     macosAmd64,
     linuxArm64,
@@ -107,9 +133,50 @@ class Target {
     return targets;
   }
 
+  static List<Target> resolveOpenHarmonyTargets({
+    String? archName,
+    String? flutterTargetPlatforms,
+  }) {
+    if (archName != null && flutterTargetPlatforms != null) {
+      throw BuildException('Use either --arch or --target-platform, not both');
+    }
+
+    final openHarmonyTargets = forPlatform('openharmony');
+    if (archName != null) {
+      final targets = 
+          openHarmonyTargets.where((t) => t.goarch == archName).toList();
+      if (targets.isEmpty) {
+        throw BuildException('Invalid arch: $archName');
+      }
+      return targets;
+    }
+
+    if (flutterTargetPlatforms == null || flutterTargetPlatforms.isEmpty) {
+      return openHarmonyTargets;
+    }
+
+    final targets = <Target>[];
+    final seen = <String>{};
+    for (final platform in flutterTargetPlatforms.split(',')) {
+      final name = platform.trim();
+      if (name.isEmpty || !seen.add(name)) continue;
+      final target = openHarmonyTargets.where((t) => t.flutterPlatform == name);
+      if (target.isEmpty) {
+        throw BuildException('Invalid target-platform: $name');
+      }
+      targets.add(target.single);
+    }
+
+    if (targets.isEmpty) {
+      throw BuildException('No OpenHarmony target platforms provided');
+    }
+    return targets;
+  }
+
   String get dynamicLibExtension {
     switch (goos) {
       case 'android':
+      case 'openharmony':
       case 'linux':
         return '.so';
       case 'windows':
@@ -134,17 +201,34 @@ class Target {
   }
 
   String get ndkCcName {
-    if (abi == null) throw Exception('Not an Android target');
-    switch (abi) {
-      case 'armeabi-v7a':
-        return 'armv7a-linux-androideabi21-clang';
-      case 'arm64-v8a':
-        return 'aarch64-linux-android21-clang';
-      case 'x86_64':
-        return 'x86_64-linux-android21-clang';
+    if (abi == null) throw Exception('Not an Android or OpenHarmony target');
+    switch (goos) {
+      case 'android':
+        switch (abi) {
+          case 'armeabi-v7a':
+            return 'armv7a-linux-androideabi21-clang';
+          case 'arm64-v8a':
+            return 'aarch64-linux-android21-clang';
+          case 'x86_64':
+            return 'x86_64-linux-android21-clang';
+          default:
+            throw Exception('Unknown ABI: $abi');
+        }
+      case 'openharmony':
+        switch (abi) {
+          case 'armeabi-v7a':
+            return 'armv7-unknown-linux-ohos-clang';
+          case 'arm64-v8a':
+            return 'aarch64-unknown-linux-ohos-clang';
+          case 'x86_64':
+            return 'x86_64-unknown-linux-ohos-clang';
+          default:
+            throw Exception('Unknown ABI: $abi');
+        }
       default:
-        throw Exception('Unknown ABI: $abi');
+        throw Exception('Unknown GOOS: $goos');
     }
+    
   }
 
   @override

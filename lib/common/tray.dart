@@ -61,7 +61,7 @@ class Tray {
     required TrayState trayState,
     required Traffic traffic,
   }) async {
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       return;
     }
     if (!system.isLinux) {

@@ -15,7 +15,7 @@ import 'util.dart';
 
 final _log = Logger('go_builder');
 
-String _resolveCc(Target target) {
+String _resolveCcAndroid(Target target) {
   final ndk = Environment.androidNdk;
   final prebuiltDir = Directory(
     p.join(ndk, 'toolchains', 'llvm', 'prebuilt'),
@@ -28,6 +28,14 @@ String _resolveCc(Target target) {
     throw BuildException('No NDK prebuilt toolchain found in $prebuiltDir');
   }
   return p.join(entries.first.path, 'bin', target.ndkCcName);
+}
+
+String _resolveCcOpenHarmony(Target target) {
+  final ndk = Environment.openHarmonySdk;
+  final prebuiltDir = Directory(
+    p.join(ndk, 'native', 'llvm'),
+  );
+  return p.join(prebuiltDir.path, 'bin', target.ndkCcName);
 }
 
 class GoBuilder {
@@ -85,15 +93,24 @@ class GoBuilder {
 
         final outputs = <String>[outFile];
         if (target.isLib && target.abi != null) {
-          outputs.addAll(
-            await _adjustAndroidOutput(
-              outDir: p.join(_outputPath, target.platformDir),
-              abiDir: target.abi!,
-              archName: target.abi!,
-              libPath: outFile,
-              libName: fileName,
-            ),
-          );
+          final extra = switch (target.goos) {
+            'android' => await _adjustAndroidOutput(
+                  outDir: p.join(_outputPath, target.platformDir),
+                  abiDir: target.abi!,
+                  archName: target.abi!,
+                  libPath: outFile,
+                  libName: fileName,
+                ),
+            'openharmony' => await _adjustOpenHarmonyOutput(
+                  outDir: p.join(_outputPath, target.platformDir),
+                  abiDir: target.abi!,
+                  archName: target.abi!,
+                  libPath: outFile,
+                  libName: fileName,
+                ),
+            _ => throw Exception('Unknown GOOS: ${target.goos}'),
+          };
+          outputs.addAll(extra);
         }
 
         _log.info('Built: $outFile');
@@ -118,10 +135,20 @@ class GoBuilder {
       'GOARCH': target.goarch,
     };
     if (target.isLib) {
-      env
-        ..['CGO_ENABLED'] = '1'
-        ..['CC'] = _resolveCc(target)
-        ..['CFLAGS'] = '-O3 -Werror';
+      switch (target.goos) {
+        case 'android':
+          env
+            ..['CGO_ENABLED'] = '1'
+            ..['CC'] = _resolveCcAndroid(target)
+            ..['CFLAGS'] = '-O3 -Werror';
+        case 'openharmony':
+          env
+            ..['CGO_ENABLED'] = '1'
+            ..['CC'] = _resolveCcOpenHarmony(target)
+            ..['CFLAGS'] = '-O3 -Werror';
+        default:
+          throw Exception('Unknown GOOS: $target.goos');
+      }
     } else {
       env['CGO_ENABLED'] = '0';
     }
@@ -273,6 +300,55 @@ class GoBuilder {
     final jniLibPath = p.join(jniLibsPath, libName);
     File(libPath).copySync(jniLibPath);
     outputs.add(jniLibPath);
+
+    final abiDirPath = p.join(outDir, abiDir);
+    final headerFiles = [
+      ...Directory(abiDirPath).listSync(),
+      ...Directory(_corePath).listSync(),
+    ];
+    for (final file in headerFiles) {
+      if (!file.path.endsWith('.h')) continue;
+      final fileName = p.basename(file.path);
+      final source = File(file.path);
+      final includePath = p.join(includesPath, fileName);
+      final cppIncludePath = p.join(cppIncludesPath, fileName);
+      source.copySync(includePath);
+      source.copySync(cppIncludePath);
+      outputs
+        ..add(includePath)
+        ..add(cppIncludePath);
+      if (file.path.startsWith(abiDirPath)) {
+        source.deleteSync();
+      }
+    }
+    return outputs;
+  }
+
+  Future<List<String>> _adjustOpenHarmonyOutput({
+    required String outDir,
+    required String abiDir,
+    required String archName,
+    required String libPath,
+    required String libName,
+  }) async {
+    final includesPath = p.join(outDir, 'includes', archName);
+    final openHarmonyCoreMainPath =
+        p.join(rootDir, 'ohos', 'core');
+    final napiLibsPath = p.join(openHarmonyCoreMainPath, 'libs', abiDir);
+    final cppIncludesPath =
+        p.join(openHarmonyCoreMainPath, 'src', 'main', 'cpp', 'includes', archName);
+    final outputs = <String>[];
+
+    ensureDir(napiLibsPath);
+    ensureDir(includesPath);
+    _clearDirectory(includesPath);
+    ensureDir(cppIncludesPath);
+    _clearDirectory(cppIncludesPath);
+
+    _deleteIfExists(p.join(napiLibsPath, libName));
+    final napiLibPath = p.join(napiLibsPath, libName);
+    File(libPath).copySync(napiLibPath);
+    outputs.add(napiLibPath);
 
     final abiDirPath = p.join(outDir, abiDir);
     final headerFiles = [

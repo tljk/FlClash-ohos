@@ -312,6 +312,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Для разрешения DNS-сервера",
     ),
     "defaultText": MessageLookupByLibrary.simpleMessage("По умолчанию"),
+    "definedApps": MessageLookupByLibrary.simpleMessage("Заданные приложения"),
     "delay": MessageLookupByLibrary.simpleMessage("Задержка"),
     "delayTest": MessageLookupByLibrary.simpleMessage("Тест задержки"),
     "delete": MessageLookupByLibrary.simpleMessage("Удалить"),
@@ -530,8 +531,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "ja": MessageLookupByLibrary.simpleMessage("Японский"),
     "justNow": MessageLookupByLibrary.simpleMessage("Только что"),
+    "keep": MessageLookupByLibrary.simpleMessage("Удалить из последних задач"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
       "Интервал поддержания TCP-соединения",
+    ),
+    "keepDesc": MessageLookupByLibrary.simpleMessage(
+      "Поддерживать работу VPN-сервиса при удалении приложения из последних задач",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Ключ"),
     "language": MessageLookupByLibrary.simpleMessage("Язык"),
@@ -681,6 +686,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "Пользовательский режим, полная настройка групп прокси и правил",
     ),
+    "packageName": MessageLookupByLibrary.simpleMessage("Имя пакета"),
     "palette": MessageLookupByLibrary.simpleMessage("Палитра"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "paste": MessageLookupByLibrary.simpleMessage("Вставить"),

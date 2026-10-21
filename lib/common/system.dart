@@ -33,6 +33,8 @@ class System {
 
   bool get isLinux => Platform.isLinux;
 
+  bool get isOhos => Platform.operatingSystem == 'ohos';
+
   bool get isTV => _isTV;
 
   Future<int> init() async {
@@ -50,12 +52,13 @@ class System {
       'macos' => (deviceInfo as MacOsDeviceInfo).majorVersion,
       'android' => (deviceInfo as AndroidDeviceInfo).version.sdkInt,
       'windows' => (deviceInfo as WindowsDeviceInfo).majorVersion,
+      'ohos' => (deviceInfo as OhosDeviceInfo).sdkApiVersion,
       String() => 0,
     };
   }
 
   Future<bool> didCrashOnPreviousExecution() async {
-    if (!isAndroid) return false;
+    if (!isAndroid && !isOhos) return false;
     return await app?.didCrashOnPreviousExecution() ?? false;
   }
 
@@ -87,7 +90,7 @@ class System {
   }
 
   Future<AuthorizeCode> authorizeCore() async {
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       return AuthorizeCode.error;
     }
     if (system.isWindows) {
@@ -144,7 +147,7 @@ class System {
   }
 
   Future<void> exit() async {
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       await SystemNavigator.pop();
     }
     window?.forceExit();

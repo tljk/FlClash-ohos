@@ -6,9 +6,9 @@
 
 ## FlClash
 
-[![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases/)[![Last Version](https://img.shields.io/github/release/chen08209/FlClash/all.svg?style=flat-square)](https://github.com/chen08209/FlClash/releases/)[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/tljk/FlClash-ohos/total?style=flat-square&logo=github)](https://github.com/tljk/FlClash-ohos/releases/)[![Last Version](https://img.shields.io/github/release/tljk/FlClash-ohos/all.svg?style=flat-square)](https://github.com/tljk/FlClash-ohos/releases/)[![License](https://img.shields.io/github/license/tljk/FlClash-ohos?style=flat-square)](LICENSE)
 
-[![Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=flat-square&logo=telegram)](https://t.me/FlClash)
+[![Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=flat-square&logo=telegram)](https://t.me/FlClash_ohos)
 
 基于ClashMeta的多平台代理客户端，简单易用，开源无广告。
 
@@ -24,7 +24,7 @@ on Mobile:
 
 ## Features
 
-✈️ 多平台: Android, Windows, macOS and Linux
+✈️ 多平台: Android, Windows, macOS, Linux and OpenHarmony
 
 💻 自适应多个屏幕尺寸,多种颜色主题可供选择
 
@@ -59,7 +59,7 @@ on Mobile:
 
 ## Download
 
-<a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" width="200px"/></a> <a href="https://github.com/chen08209/FlClash/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" width="200px"/></a> <a href="https://github.com/tljk/FlClash-ohos/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
 
 ### Homebrew
 
@@ -128,12 +128,24 @@ brew install --cask flclash
            dart setup.dart macos
            ```
 
+    - OpenHarmony
+
+        1. 安装 `DevEco Studio` 及 OpenHarmony SDK
+
+        2. 设置 `OHOS_NDK_HOME` 环境变量
+
+        3. 运行构建脚本
+
+           ```bash
+           dart setup.dart ohos
+           ```
+
 ## Star
 
 支持开发者的最简单方式是点击页面顶部的星标（⭐）。
 
 <p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=chen08209/FlClash&Date">
-        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=chen08209/FlClash&Date"/>
+    <a href="https://api.star-history.com/svg?repos=tljk/FlClash-ohos&Date">
+        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=tljk/FlClash-ohos&Date"/>
     </a>
 </p>

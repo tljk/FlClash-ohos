@@ -79,7 +79,7 @@ class SetupAction extends _$SetupAction {
       return;
     }
     commonPrint.log('init status');
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       await _updateStartTime();
     }
     final shouldRun = _isRunning || ref.read(appSettingProvider).autoRun;
@@ -144,7 +144,9 @@ class SetupAction extends _$SetupAction {
       if (!_isCurrent(request)) {
         return;
       }
+      await app?.setBackgroundRunning(request.running);
       if (request.running && ref.read(suspendProvider)) {
+        await setCoreRunning(!request.running);
         return;
       }
       await setCoreRunning(request.running);
@@ -405,7 +407,7 @@ class SetupAction extends _$SetupAction {
     if (yamlMd5 == globalState.lastConfigMd5 && force == false) {
       return _SetupTaskResult.completed;
     }
-    if (system.isAndroid) {
+    if (system.isAndroid || system.isOhos) {
       globalState.lastVpnState = ref.read(vpnStateProvider);
       final sharedState = ref.read(sharedStateProvider);
       await preferences.saveShareState(sharedState);

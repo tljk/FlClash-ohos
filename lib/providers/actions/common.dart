@@ -75,7 +75,10 @@ class CommonAction extends _$CommonAction {
         cancelText: isUser ? null : currentAppLocalizations.noLongerRemind,
       );
       if (res == true) {
-        launchUrl(Uri.parse('https://github.com/$repository/releases/latest'));
+        launchUrl(
+          Uri.parse('https://github.com/$repository/releases/latest'),
+          mode: system.isOhos ? LaunchMode.externalApplication : LaunchMode.platformDefault,
+        );
       } else if (!isUser && res == false) {
         ref
             .read(appSettingProvider.notifier)

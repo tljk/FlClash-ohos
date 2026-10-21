@@ -36,6 +36,7 @@ class BaseScrollBehavior extends MaterialScrollBehavior {
               child: child,
             );
           case TargetPlatform.android:
+          case TargetPlatform.ohos:
           case TargetPlatform.fuchsia:
           case TargetPlatform.iOS:
             return child;
