@@ -15,6 +15,8 @@ concurrency:
 env:
   IS_STABLE: ${{ !contains(github.ref, '-') }}
   FLUTTER_VERSION: '3.47.4'
+  FLUTTER_VERSION_OHOS: '3.47.7+ohos-0.0.1-pre'
+  FLUTTER_BRANCH_OHOS: 'oh-3.47.7-preview'
   GO_VERSION: '1.26.4'
   NDK_VERSION: r28c
   SDK_VERSION: 26.0.0.821
@@ -51,37 +53,27 @@ jobs:
           version: ${{ env.SDK_VERSION }}
           cache: true
 
-      - name: Setup Flutter
-        if: false
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-
       - name: Setup Flutter With OpenHarmony
-        run: |
-          git clone -b 3.47.7+ohos-0.0.1-pre --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.47.7
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" apply "$GITHUB_WORKSPACE/.github/flutter_ohos.patch"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
-          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
-          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+        uses: tljk/flutter-action@main
+        with:
+          channel: ${{ env.FLUTTER_BRANCH_OHOS }}
+          flutter-version: ${{ env.FLUTTER_VERSION_OHOS }}
+          git-source: https://gitcode.com/CPF-Flutter/flutter_flutter.git
+          cache: true
+          cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
+          pub-cache: true
+      - run: bash .github/revert_flutter_ohos.sh
 
-      - name: Cache Pub dependencies
+      - name: Cache downloaded package archives
         uses: actions/cache@v4
         with:
           path: |
-            ~/.pub-cache
             ${{ runner.tool_cache }}/material_ui-1.8.0.tar.gz
             ${{ runner.tool_cache }}/cupertino_ui-1.1.4.tar.gz
           key: ohos-pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', '.github/material_ui_ohos.patch', '.github/cupertino_ui_ohos.patch') }}
           restore-keys: |
             ohos-pub-${{ runner.os }}-
-
-      - name: Prepare patched packages
-        run: bash .github/setup_packages_ohos.sh
+      - run: bash .github/setup_packages_ohos.sh
 
       - name: Install dependencies
         run: flutter pub get
@@ -114,23 +106,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
-        if: false
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-
       - name: Setup Flutter With OpenHarmony
-        run: |
-          git clone -b 3.47.7+ohos-0.0.1-pre --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.47.7
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" apply "$GITHUB_WORKSPACE/.github/flutter_ohos.patch"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
-          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
-          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+        uses: tljk/flutter-action@main
+        with:
+          channel: ${{ env.FLUTTER_BRANCH_OHOS }}
+          flutter-version: ${{ env.FLUTTER_VERSION_OHOS }}
+          git-source: https://gitcode.com/CPF-Flutter/flutter_flutter.git
+          cache: true
+          cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
+          pub-cache: true
+      - run: bash .github/revert_flutter_ohos.sh
 
       - name: Validate local Flutter packages
         run: bash tool/check_plugins.sh
@@ -299,38 +284,27 @@ jobs:
           version: ${{ env.SDK_VERSION }}
           cache: true
 
-      - name: Setup Flutter
-        if: false
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-
       - name: Setup Flutter With OpenHarmony
-        run: |
-          git clone -b 3.47.7+ohos-0.0.1-pre --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.47.7
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" apply "$GITHUB_WORKSPACE/.github/flutter_ohos.patch"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
-          echo "FLUTTER_ROOT=$RUNNER_TOOL_CACHE/flutter-ohos" >> "$GITHUB_ENV"
-          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
-          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+        uses: tljk/flutter-action@main
+        with:
+          channel: ${{ env.FLUTTER_BRANCH_OHOS }}
+          flutter-version: ${{ env.FLUTTER_VERSION_OHOS }}
+          git-source: https://gitcode.com/CPF-Flutter/flutter_flutter.git
+          cache: true
+          cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
+          pub-cache: true
+      - run: bash .github/revert_flutter_ohos.sh
 
-      - name: Cache Pub dependencies
+      - name: Cache downloaded package archives
         uses: actions/cache@v4
         with:
           path: |
-            ~/.pub-cache
             ${{ runner.tool_cache }}/material_ui-1.8.0.tar.gz
             ${{ runner.tool_cache }}/cupertino_ui-1.1.4.tar.gz
           key: ohos-pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', '.github/material_ui_ohos.patch', '.github/cupertino_ui_ohos.patch') }}
           restore-keys: |
             ohos-pub-${{ runner.os }}-
-
-      - name: Prepare patched packages
-        run: bash .github/setup_packages_ohos.sh
+      - run: bash .github/setup_packages_ohos.sh
 
       - name: Install dependencies
         run: flutter pub get
@@ -500,25 +474,16 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         run: git config --global core.longpaths true
 
-      # Stable publishes no Windows or Linux arm64 archive; master makes the action
-      # clone the SDK at the pinned tag and let it fetch the host's own Dart SDK.
-      - name: Setup Flutter
-        if: false
-        uses: subosito/flutter-action@v2
-        with:
-          channel: master
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-
       - name: Setup Flutter With OpenHarmony
-        run: |
-          git clone -b 3.47.7+ohos-0.0.1-pre --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.47.7
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" apply "$GITHUB_WORKSPACE/.github/flutter_ohos.patch"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
-          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
-          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+        uses: tljk/flutter-action@main
+        with:
+          channel: ${{ env.FLUTTER_BRANCH_OHOS }}
+          flutter-version: ${{ env.FLUTTER_VERSION_OHOS }}
+          git-source: https://gitcode.com/CPF-Flutter/flutter_flutter.git
+          cache: true
+          cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
+          pub-cache: true
+      - run: bash .github/revert_flutter_ohos.sh
 
       - name: Setup Xcode
         if: startsWith(matrix.platform,'macos')
@@ -542,20 +507,17 @@ jobs:
           version: ${{ env.SDK_VERSION }}
           cache: true
 
-      - name: Cache Pub dependencies
+      - name: Cache downloaded package archives
         if: startsWith(matrix.platform, 'ohos')
         uses: actions/cache@v4
         with:
           path: |
-            ~/.pub-cache
             ${{ runner.tool_cache }}/material_ui-1.8.0.tar.gz
             ${{ runner.tool_cache }}/cupertino_ui-1.1.4.tar.gz
           key: ohos-pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', '.github/material_ui_ohos.patch', '.github/cupertino_ui_ohos.patch') }}
           restore-keys: |
             ohos-pub-${{ runner.os }}-
-
-      - name: Prepare patched packages
-        run: bash .github/setup_packages_ohos.sh
+      - run: bash .github/setup_packages_ohos.sh
 
       - name: Get Flutter Dependency
         run: |
@@ -611,38 +573,27 @@ jobs:
           version: ${{ env.SDK_VERSION }}
           cache: true
 
-      - name: Setup Flutter
-        if: false
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-
       - name: Setup Flutter With OpenHarmony
-        run: |
-          git clone -b 3.47.7+ohos-0.0.1-pre --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.47.7
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" apply "$GITHUB_WORKSPACE/.github/flutter_ohos.patch"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
-          echo "FLUTTER_ROOT=$RUNNER_TOOL_CACHE/flutter-ohos" >> "$GITHUB_ENV"
-          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
-          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+        uses: tljk/flutter-action@main
+        with:
+          channel: ${{ env.FLUTTER_BRANCH_OHOS }}
+          flutter-version: ${{ env.FLUTTER_VERSION_OHOS }}
+          git-source: https://gitcode.com/CPF-Flutter/flutter_flutter.git
+          cache: true
+          cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
+          pub-cache: true
+      - run: bash .github/revert_flutter_ohos.sh
 
-      - name: Cache Pub dependencies
+      - name: Cache downloaded package archives
         uses: actions/cache@v4
         with:
           path: |
-            ~/.pub-cache
             ${{ runner.tool_cache }}/material_ui-1.8.0.tar.gz
             ${{ runner.tool_cache }}/cupertino_ui-1.1.4.tar.gz
           key: ohos-pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', '.github/material_ui_ohos.patch', '.github/cupertino_ui_ohos.patch') }}
           restore-keys: |
             ohos-pub-${{ runner.os }}-
-
-      - name: Prepare patched packages
-        run: bash .github/setup_packages_ohos.sh
+      - run: bash .github/setup_packages_ohos.sh
 
       - name: Install dependencies
         run: flutter pub get
