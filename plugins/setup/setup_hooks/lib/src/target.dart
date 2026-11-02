@@ -23,6 +23,22 @@ class Target {
     abi: 'x86_64',
   );
 
+  static const openHarmonyArm = Target(
+    goos: 'openharmony',
+    goarch: 'arm',
+    abi: 'armeabi-v7a',
+  );
+  static const openHarmonyArm64 = Target(
+    goos: 'openharmony',
+    goarch: 'arm64',
+    abi: 'arm64-v8a',
+  );
+  static const openHarmonyAmd64 = Target(
+    goos: 'openharmony',
+    goarch: 'amd64',
+    abi: 'x86_64',
+  );
+
   static const macosArm64 = Target(goos: 'darwin', goarch: 'arm64');
   static const macosAmd64 = Target(goos: 'darwin', goarch: 'amd64');
 
@@ -36,6 +52,9 @@ class Target {
     androidArm,
     androidArm64,
     androidAmd64,
+    openHarmonyArm,
+    openHarmonyArm64,
+    openHarmonyAmd64,
     macosArm64,
     macosAmd64,
     linuxArm64,
@@ -62,11 +81,20 @@ class Target {
 
   String get platformDir => goos == 'darwin' ? 'macos' : goos;
 
-  String get ndkTriple => switch (abi) {
-    'armeabi-v7a' => 'armv7a-linux-androideabi',
-    'arm64-v8a' => 'aarch64-linux-android',
-    'x86_64' => 'x86_64-linux-android',
-    _ => throw BuildException('Not an Android target: $this'),
+  String get ndkTriple => switch (goos) {
+    'android' => switch (abi) {
+      'armeabi-v7a' => 'armv7a-linux-androideabi',
+      'arm64-v8a' => 'aarch64-linux-android',
+      'x86_64' => 'x86_64-linux-android',
+      _ => throw BuildException('Not an Android target: $this'),
+    },
+    'openharmony' => switch (abi) {
+      'armeabi-v7a' => 'armv7a-unknown-linux-ohos',
+      'arm64-v8a' => 'aarch64-unknown-linux-ohos',
+      'x86_64' => 'x86_64-unknown-linux-ohos',
+      _ => throw BuildException('Not an OpenHarmony target: $this'),
+    },
+    _ => throw BuildException('Unknown GOOS: ${goos}'),
   };
 
   String get rustTriple {

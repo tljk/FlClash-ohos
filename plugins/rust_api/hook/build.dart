@@ -20,7 +20,8 @@ void main(List<String> args) async {
 // NDKs before r26 keep it under lib64, later ones and every macOS NDK under lib.
 Map<String, String> _bindgenEnvironment(BuildInput input) {
   if (!input.config.buildCodeAssets ||
-      input.config.code.targetOS != OS.android) {
+      !(input.config.code.targetOS == OS.android ||
+          input.config.code.targetOS == OS.ohos)) {
     return const {};
   }
   final compiler = input.config.code.cCompiler?.compiler;
@@ -28,7 +29,7 @@ Map<String, String> _bindgenEnvironment(BuildInput input) {
     return const {};
   }
   final llvmRoot = File.fromUri(compiler).parent.parent;
-  for (final name in const ['lib', 'lib64']) {
+  for (final name in const ['lib', 'lib64', 'bin']) {
     final directory = Directory(
       '${llvmRoot.path}${Platform.pathSeparator}$name',
     );

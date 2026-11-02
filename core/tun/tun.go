@@ -1,4 +1,4 @@
-//go:build android && cgo
+//go:build (android || openharmony) && cgo
 
 package tun
 
@@ -6,6 +6,7 @@ import "C"
 import (
 	"net"
 	"net/netip"
+	"runtime"
 	"strings"
 	"syscall"
 
@@ -15,6 +16,12 @@ import (
 	"github.com/metacubex/mihomo/log"
 	"github.com/metacubex/mihomo/tunnel"
 )
+
+func releaseFd(fd int) {
+	if runtime.GOOS == "android" {
+		_ = syscall.Close(fd)
+	}
+}
 
 // Start takes ownership of fd. dupFd is handed to sing_tun.New, which only
 // takes ownership of it once tunNew succeeds inside New; from that point
@@ -38,7 +45,7 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 		prefix, err := netip.ParsePrefix(a)
 		if err != nil {
 			log.Errorln("TUN: %v", err)
-			_ = syscall.Close(fd)
+			releaseFd(fd)
 			return nil
 		}
 		if prefix.Addr().Is4() {
@@ -57,7 +64,7 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 		hijack := net.JoinHostPort(d, "53")
 		if _, err := netip.ParseAddrPort(hijack); err != nil {
 			log.Errorln("TUN: %v", err)
-			_ = syscall.Close(fd)
+			releaseFd(fd)
 			return nil
 		}
 		dnsHijack = append(dnsHijack, hijack)
@@ -66,10 +73,10 @@ func Start(fd int, stack string, address, dns string) *sing_tun.Listener {
 	dupFd, err := syscall.Dup(fd)
 	if err != nil {
 		log.Errorln("TUN: %v", err)
-		_ = syscall.Close(fd)
+		releaseFd(fd)
 		return nil
 	}
-	defer func() { _ = syscall.Close(fd) }()
+	defer releaseFd(fd)
 
 	options := LC.Tun{
 		Enable:              true,

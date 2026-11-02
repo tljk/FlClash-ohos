@@ -1,4 +1,4 @@
-//go:build windows && !(android && cgo)
+//go:build windows && !((android || openharmony) && cgo)
 
 package main
 

@@ -17,7 +17,10 @@ class Picker {
       initialDirectory: await appPath.downloadDirPath,
       bytes: bytes,
     );
-    if (!system.isAndroid && uri != null && uri.scheme == 'file') {
+    if (!system.isAndroid &&
+        !system.isOhos &&
+        uri != null &&
+        uri.scheme == 'file') {
       final file = File(uri.toFilePath());
       await file.safeWriteAsBytes(bytes);
     }

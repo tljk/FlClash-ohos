@@ -707,12 +707,12 @@ void main() {
 
           await action.setRunning(true);
 
-          expect(action.transitions, isEmpty);
+          expect(action.transitions, [false]);
           expect(container.read(isStartProvider), isTrue);
           expect(action.applyProfileDebounceCount, 1);
 
           await action.setRunning(false);
-          expect(action.transitions, [false]);
+          expect(action.transitions, [false, false]);
         },
       );
     });

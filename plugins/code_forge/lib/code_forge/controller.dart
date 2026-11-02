@@ -97,7 +97,10 @@ class CodeForgeController implements DeltaTextInputClient {
   static const _flushDelay = Duration(milliseconds: 100);
   static const _imeProjectionLineRadius = 2, _imeProjectionMaxChars = 4096;
   static const _lineEditLogLimit = 256;
-  final _isMobile = Platform.isAndroid || Platform.isIOS;
+  final _isMobile =
+      Platform.isAndroid ||
+      Platform.isIOS ||
+      Platform.operatingSystem == 'ohos';
   final List<VoidCallback> _listeners = [];
   final List<DocumentEditListener> _editListeners = [];
   CodeForgeView? _view;

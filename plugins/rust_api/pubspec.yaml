@@ -15,6 +15,13 @@ dependencies:
   flutter_rust_bridge: 2.13.0
   flutter_rust_bridge_hooks: 2.13.0
 
+dependency_overrides:
+  code_assets:
+    git:
+      url: https://gitcode.com/CPF-Flutter/fluttertpc_dart_native.git
+      path: pkgs/code_assets
+      ref: flutter_3.47.7_deps
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,0 +1,21 @@
+diff --git a/packages/flutter_tools/lib/src/isolated/native_assets/targets.dart b/packages/flutter_tools/lib/src/isolated/native_assets/targets.dart
+index 7fa1b3e1..075abd4f 100644
+--- a/packages/flutter_tools/lib/src/isolated/native_assets/targets.dart
++++ b/packages/flutter_tools/lib/src/isolated/native_assets/targets.dart
+@@ -423,15 +423,7 @@ final class OhosAssetTarget extends CodeAssetTarget {
+         targetArchitecture: architecture,
+         linkModePreference: LinkModePreference.dynamic,
+         cCompiler: cCompilerConfigSync,
+-        // Third-party hooks resolve their own package:code_assets from the
+-        // application. The hosted package does not know OHOS yet, so use a
+-        // known OS without extra protocol configuration in the hook input while
+-        // keeping this target as OS.ohos for Flutter's asset filtering and
+-        // bundling. Hooks that support Linux code assets may run their Linux
+-        // path for OHOS until this compatibility shim is removed.
+-        // TODO(ohos): Revert to OS.ohos once hosted package:code_assets
+-        // recognizes OHOS.
+-        targetOS: OS.linux,
++        targetOS: OS.ohos,
+       ),
+     ...dataAssetExtensions,
+   ];

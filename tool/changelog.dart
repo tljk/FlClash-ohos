@@ -7,7 +7,7 @@ import 'src/changelog/git.dart';
 import 'src/changelog/models.dart';
 import 'src/changelog/render.dart';
 
-const _repository = 'chen08209/FlClash';
+const _repository = 'tljk/FlClash-ohos';
 
 Future<void> main(List<String> arguments) async {
   final parser = ArgParser()
@@ -113,7 +113,7 @@ int _render(String root, ArgResults command) {
   if (changelog.versions.isEmpty) {
     _fail('$changelogDataPath has no versions to render');
   }
-  final tag = command.option('tag');
+  final tag = command.option('tag')?.replaceFirst(RegExp(r'\+\d+$'), '');
   final version = tag == null
       ? changelog.versions.first
       : changelog.versions.firstWhere(

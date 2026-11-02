@@ -27,3 +27,5 @@ flutter:
         pluginClass: WifiSsidPluginCApi
       linux:
         pluginClass: WifiSsidPlugin
+      ohos:
+        pluginClass: WifiSsidPlugin

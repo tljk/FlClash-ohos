@@ -122,4 +122,4 @@ class Service {
   }
 }
 
-Service? get service => system.isAndroid ? Service() : null;
+Service? get service => system.isAndroid || system.isOhos ? Service() : null;

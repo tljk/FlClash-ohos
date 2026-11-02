@@ -89,7 +89,7 @@ class _AppStateManagerState extends ConsumerState<AppStateManager>
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    commonPrint.log('$state');
+    // commonPrint.log('$state');
     _updateVisible(state);
     if (state == AppLifecycleState.resumed) {
       permissions.check(ref.read);

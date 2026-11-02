@@ -98,6 +98,7 @@ final class CoreBuilder implements Builder {
     final code = input.config.code;
     final platform = switch (code.targetOS) {
       OS.android => 'android',
+      OS.ohos => 'openharmony',
       OS.linux => 'linux',
       OS.macOS => 'macos',
       OS.windows => 'windows',
@@ -125,6 +126,9 @@ final class CoreBuilder implements Builder {
       target: target,
       androidToolchain: code.targetOS == OS.android
           ? _androidToolchain(code)
+          : null,
+      openHarmonyToolchain: code.targetOS == OS.ohos
+          ? _openHarmonyToolchain(code)
           : null,
     );
   }
@@ -156,5 +160,17 @@ final class CoreBuilder implements Builder {
       clangDirectory: p.dirname(p.fromUri(compiler)),
       apiLevel: code.android.targetNdkApi,
     );
+  }
+
+  OpenHarmonyToolchain _openHarmonyToolchain(CodeConfig code) {
+    final compiler = code.cCompiler?.compiler;
+    if (compiler == null) {
+      throw InfraError(
+        message:
+            'Flutter passed no NDK C compiler to the setup build hook; '
+            'install the NDK version ohos/build-profile.json5 names',
+      );
+    }
+    return OpenHarmonyToolchain(clangDirectory: p.dirname(p.fromUri(compiler)));
   }
 }

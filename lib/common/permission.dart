@@ -28,7 +28,7 @@ class Permissions {
   Permissions._internal({bool Function()? supportsLocationPermissions})
     : _supportsLocationPermissions =
           supportsLocationPermissions ??
-          (() => system.isAndroid || system.isMacOS);
+          (() => system.isAndroid || system.isOhos || system.isMacOS);
 
   factory Permissions() {
     _instance ??= Permissions._internal();

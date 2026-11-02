@@ -1,0 +1,72 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "$string:app_name"
+    },
+    {
+      "name": "TempAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "TempAbility_label",
+      "value": "$string:app_name"
+    },
+    {
+      "name": "permission_reason_internet",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_read_media",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_write_media",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_camera",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_get_wifi_info",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_read_pasteboard",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_keep_background_running_system",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_keep_background_running",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_get_network_info",
+      "value": ""
+    },
+    {
+      "name": "permission_reason_use_fraud_app_picker",
+      "value": ""
+    },
+    {
+      "name": "widget_desc",
+      "value": ""
+    },
+    {
+      "name": "widget_display_name",
+      "value": ""
+    }
+  ]
+}

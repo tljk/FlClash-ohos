@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "core",
+    "type": "har",
+    "deviceTypes": [
+      "default"
+    ],
+    "appStartup": "$profile:startup_config"
+  }
+}

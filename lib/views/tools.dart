@@ -67,7 +67,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
         const _ThemeItem(),
         const _BackupItem(),
         if (system.isDesktop) const _HotkeyItem(),
-        if (system.isAndroid) const _AccessItem(),
+        if (system.isAndroid || system.isOhos) const _AccessItem(),
         const _AdvancedConfigItem(),
         const _GeneralItem(),
       ],

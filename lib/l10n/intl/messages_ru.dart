@@ -450,6 +450,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "daysAgo": m4,
     "defaultText": MessageLookupByLibrary.simpleMessage("По умолчанию"),
+    "definedApps": MessageLookupByLibrary.simpleMessage("Заданные приложения"),
     "delay": MessageLookupByLibrary.simpleMessage("Задержка"),
     "delayTest": MessageLookupByLibrary.simpleMessage("Тест задержки"),
     "delete": MessageLookupByLibrary.simpleMessage("Удалить"),
@@ -839,8 +840,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "ipv6Timeout": MessageLookupByLibrary.simpleMessage("Тайм-аут IPv6 (мс)"),
     "ja": MessageLookupByLibrary.simpleMessage("Японский"),
     "justNow": MessageLookupByLibrary.simpleMessage("Только что"),
+    "keep": MessageLookupByLibrary.simpleMessage("Удалить из последних задач"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
       "Интервал TCP keep-alive",
+    ),
+    "keepDesc": MessageLookupByLibrary.simpleMessage(
+      "Поддерживать работу VPN-сервиса при удалении приложения из последних задач",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Ключ"),
     "language": MessageLookupByLibrary.simpleMessage("Язык"),
@@ -1066,6 +1071,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "Пользовательский режим: полная настройка прокси, групп прокси и правил",
     ),
+    "packageName": MessageLookupByLibrary.simpleMessage("Имя пакета"),
     "palette": MessageLookupByLibrary.simpleMessage("Палитра"),
     "password": MessageLookupByLibrary.simpleMessage("Пароль"),
     "paste": MessageLookupByLibrary.simpleMessage("Вставить"),

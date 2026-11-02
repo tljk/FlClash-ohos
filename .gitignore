@@ -61,6 +61,10 @@ docs/
 /android/core/**/cmake-build-*/
 /android/core/**/jniLibs/
 
+# OpenHarmony
+/ohos/**/libs/
+/ohos/**/includes/
+
 #FlClash
 /libclash/
 /android/app/src/main/jniLibs/
