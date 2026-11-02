@@ -336,12 +336,12 @@ class VpnSections extends StatelessWidget {
         generateSectionV3(items: const [VPNItem()]),
         generateSectionV3(
           title: 'VPN',
-          items: const [
-            VpnSystemProxyItem(),
-            BypassDomainItem(),
-            AllowBypassItem(),
-            Ipv6Item(),
-            DNSHijackingItem(),
+          items: [
+            if (!system.isOhos) const VpnSystemProxyItem(),
+            if (!system.isOhos) const BypassDomainItem(),
+            const AllowBypassItem(),
+            const Ipv6Item(),
+            const DNSHijackingItem(),
           ],
         ),
       ],
@@ -402,7 +402,7 @@ class NetworkListView extends StatelessWidget {
         horizontal: 16,
       ).copyWith(top: context.contentTopPadding, bottom: 16),
       children: [
-        if (system.isAndroid) const VpnSections(),
+        if (system.isAndroid || system.isOhos) const VpnSections(),
         if (system.isDesktop) const SystemProxySection(),
         const NetworkOptionsSection(),
       ],

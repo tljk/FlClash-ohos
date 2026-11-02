@@ -138,6 +138,9 @@ class CommonAction extends _$CommonAction {
         unawaited(
           launchUrl(
             Uri.parse('https://github.com/$repository/releases/latest'),
+            mode: system.isOhos
+                ? LaunchMode.externalApplication
+                : LaunchMode.platformDefault,
           ),
         );
       } else if (!isUser && res == false) {

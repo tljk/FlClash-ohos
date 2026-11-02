@@ -25,12 +25,22 @@ class AndroidToolchain {
       p.join(clangDirectory, '${target.ndkTriple}$apiLevel-clang');
 }
 
+class OpenHarmonyToolchain {
+  const OpenHarmonyToolchain({required this.clangDirectory});
+
+  final String clangDirectory;
+
+  String clangFor(Target target) =>
+      p.join(clangDirectory, '${target.ndkTriple}-clang');
+}
+
 class BuildRequest {
   const BuildRequest({
     required this.rootDir,
     required this.target,
     this.harnessDir,
     this.androidToolchain,
+    this.openHarmonyToolchain,
   });
 
   final String rootDir;
@@ -38,6 +48,7 @@ class BuildRequest {
 
   final String? harnessDir;
   final AndroidToolchain? androidToolchain;
+  final OpenHarmonyToolchain? openHarmonyToolchain;
 }
 
 class BuildReport {
@@ -61,9 +72,23 @@ class BuildReport {
 Future<BuildReport> buildPlatform(BuildRequest request) async {
   final stopwatch = Stopwatch()..start();
   final target = request.target;
-  if (target.isLib && request.androidToolchain == null) {
-    throw BuildException('Android target $target needs an NDK toolchain');
+  if (target.isLib) {
+    switch (target.goos) {
+      case 'android':
+        if (request.androidToolchain == null) {
+          throw BuildException('Android target $target needs an NDK toolchain');
+        }
+      case 'openharmony':
+        if (request.openHarmonyToolchain == null) {
+          throw BuildException(
+            'OpenHarmony target $target needs an NDK toolchain',
+          );
+        }
+      default:
+        throw BuildException('Unknown GOOS: $target.goos');
+    }
   }
+
   final rootDir = request.rootDir;
   final config = BuildConfig.load(rootDir: rootDir);
   final cache = BuildCache(rootDir: rootDir);
@@ -80,6 +105,7 @@ Future<BuildReport> buildPlatform(BuildRequest request) async {
     notice: notice,
     harnessInputs: harnessInputs,
     androidToolchain: request.androidToolchain,
+    openHarmonyToolchain: request.openHarmonyToolchain,
   ).build(target);
   if (!target.hasHelper) {
     _log.info('Done in ${stopwatch.elapsed}: ${core.primaryOutput}');

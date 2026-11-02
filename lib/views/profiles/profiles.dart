@@ -550,26 +550,23 @@ class _ReorderableProfilesSheetState
           ),
         ),
       ],
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 32),
-        child: ReorderableListView.builder(
-          buildDefaultDragHandles: false,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-          ).copyWith(top: context.contentTopPadding),
-          proxyDecorator: (child, index, animation) {
-            return commonProxyDecorator(_buildItem(index), index, animation);
-          },
-          onReorderItem: (oldIndex, newIndex) {
-            setState(() {
-              profiles = profiles.copyAndReorder(oldIndex, newIndex);
-            });
-          },
-          itemBuilder: (_, index) {
-            return _buildItem(index);
-          },
-          itemCount: profiles.length,
-        ),
+      body: ReorderableListView.builder(
+        buildDefaultDragHandles: false,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+        ).copyWith(top: context.contentTopPadding),
+        proxyDecorator: (child, index, animation) {
+          return commonProxyDecorator(_buildItem(index), index, animation);
+        },
+        onReorderItem: (oldIndex, newIndex) {
+          setState(() {
+            profiles = profiles.copyAndReorder(oldIndex, newIndex);
+          });
+        },
+        itemBuilder: (_, index) {
+          return _buildItem(index);
+        },
+        itemCount: profiles.length,
       ),
       title: appLocalizations.profilesSort,
     );

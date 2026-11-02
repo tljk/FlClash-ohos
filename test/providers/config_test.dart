@@ -235,7 +235,7 @@ void main() {
         overrideNtp: true,
       );
       final overrides = buildConfigOverrides(config);
-      expect(overrides.length, 13);
+      expect(overrides.length, 14);
 
       final overrideContainer = ProviderContainer(overrides: overrides);
       addTearDown(overrideContainer.dispose);

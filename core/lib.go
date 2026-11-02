@@ -1,4 +1,4 @@
-//go:build android && cgo
+//go:build (android || openharmony) && cgo
 
 package main
 
@@ -14,6 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -129,7 +130,9 @@ func (th *TunHandler) handleResolveProcess(source, target net.Addr) (int, string
 		protocol = syscall.IPPROTO_TCP
 	}
 	var uid int
-	if sdkVersion.Load() < 29 {
+	if runtime.GOOS == "openharmony" && sdkVersion.Load() < 23 {
+		uid = platform.QuerySocketUidFromProcFs(source, target)
+	} else if runtime.GOOS == "android" && sdkVersion.Load() < 29 {
 		uid = platform.QuerySocketUidFromProcFs(source, target)
 	} else {
 		uid = resolveUid(th.callback, protocol, source.String(), target.String())
@@ -137,7 +140,11 @@ func (th *TunHandler) handleResolveProcess(source, target net.Addr) (int, string
 	if uid < 0 {
 		return -1, ""
 	}
-	return uid, resolvePackage(th.callback, uid)
+	if runtime.GOOS == "android" {
+		return uid, resolvePackage(th.callback, uid)
+	} else {
+		return uid, ""
+	}
 }
 
 var (

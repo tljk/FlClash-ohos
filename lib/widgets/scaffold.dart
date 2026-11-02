@@ -597,6 +597,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     final barFloats = !isBottomSheet;
     final body = SafeArea(
       top: !barFloats,
+      bottom: false,
       child: ValueListenableBuilder(
         valueListenable: _keywordsNotifier,
         builder: (context, keywords, _) {
@@ -761,8 +762,6 @@ class CommonScaffoldState extends State<CommonScaffold> {
           children: [
             Flexible(child: sheetBody),
             const _KeyboardSpacer(),
-            if (!form.hasDockedSearch)
-              SizedBox(height: MediaQuery.viewPaddingOf(context).bottom),
           ],
         ),
       ),

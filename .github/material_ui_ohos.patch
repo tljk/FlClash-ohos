@@ -1,0 +1,719 @@
+diff --git a/lib/src/about.dart b/lib/src/about.dart
+index 472a284..a42b019 100644
+--- a/lib/src/about.dart
++++ b/lib/src/about.dart
+@@ -533,6 +533,7 @@ class _AdaptiveAboutDialog extends AboutDialog {
+           ),
+         ];
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+diff --git a/lib/src/action_buttons.dart b/lib/src/action_buttons.dart
+index b2bd93a..14e2a59 100644
+--- a/lib/src/action_buttons.dart
++++ b/lib/src/action_buttons.dart
+@@ -95,6 +95,7 @@ class _ActionIcon extends StatelessWidget {
+     switch (defaultTargetPlatform) {
+       case TargetPlatform.android:
+         semanticsLabel = getAndroidSemanticsLabel(MaterialLocalizations.of(context));
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -137,6 +138,7 @@ class BackButtonIcon extends StatelessWidget {
+         }
+         switch (Theme.of(context).platform) {
+           case TargetPlatform.android:
++          case TargetPlatform.ohos:
+           case TargetPlatform.fuchsia:
+           case TargetPlatform.linux:
+           case TargetPlatform.windows:
+diff --git a/lib/src/adaptive_text_selection_toolbar.dart b/lib/src/adaptive_text_selection_toolbar.dart
+index bda50fd..383b34d 100644
+--- a/lib/src/adaptive_text_selection_toolbar.dart
++++ b/lib/src/adaptive_text_selection_toolbar.dart
+@@ -210,6 +210,7 @@ class AdaptiveTextSelectionToolbar extends StatelessWidget {
+       case TargetPlatform.macOS:
+         return CupertinoTextSelectionToolbarButton.getButtonLabel(context, buttonItem);
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -279,6 +280,20 @@ class AdaptiveTextSelectionToolbar extends StatelessWidget {
+           );
+         }
+         return buttons;
++      case TargetPlatform.ohos:
++        final buttons = <Widget>[];
++        for (var i = 0; i < buttonItems.length; i++) {
++          final ContextMenuButtonItem buttonItem = buttonItems[i];
++          buttons.add(
++            TextSelectionToolbarTextButton(
++              padding: TextSelectionToolbarTextButton.getPadding(i, buttonItems.length),
++              onPressed: buttonItem.onPressed,
++              alignment: AlignmentDirectional.centerStart,
++              child: Text(getButtonLabel(context, buttonItem)),
++            ),
++          );
++        }
++        return buttons;
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+         return buttonItems.map((ContextMenuButtonItem buttonItem) {
+@@ -326,6 +341,14 @@ class AdaptiveTextSelectionToolbar extends StatelessWidget {
+               : anchors.secondaryAnchor!,
+           children: resultChildren,
+         );
++      case TargetPlatform.ohos:
++        return TextSelectionToolbar(
++          anchorAbove: anchors.primaryAnchor,
++          anchorBelow: anchors.secondaryAnchor == null
++              ? anchors.primaryAnchor
++              : anchors.secondaryAnchor!,
++          children: resultChildren,
++        );
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+diff --git a/lib/src/app.dart b/lib/src/app.dart
+index dbc6918..72fca91 100644
+--- a/lib/src/app.dart
++++ b/lib/src/app.dart
+@@ -811,6 +811,7 @@ class MaterialScrollBehavior extends ScrollBehavior {
+             assert(details.controller != null);
+             return Scrollbar(controller: details.controller, child: child);
+           case TargetPlatform.android:
++          case TargetPlatform.ohos:
+           case TargetPlatform.fuchsia:
+           case TargetPlatform.iOS:
+             return child;
+@@ -842,6 +843,7 @@ class MaterialScrollBehavior extends ScrollBehavior {
+           case AndroidOverscrollIndicator.glow:
+             break;
+         }
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+         break;
+     }
+diff --git a/lib/src/app_bar.dart b/lib/src/app_bar.dart
+index 46bd03b..9bdac9f 100644
+--- a/lib/src/app_bar.dart
++++ b/lib/src/app_bar.dart
+@@ -809,6 +809,7 @@ class AppBar extends StatefulWidget implements PreferredSizeWidget {
+       return switch (theme.platform) {
+         TargetPlatform.iOS || TargetPlatform.macOS => actions == null || actions!.length < 2,
+         TargetPlatform.android ||
++        TargetPlatform.ohos ||
+         TargetPlatform.fuchsia ||
+         TargetPlatform.linux ||
+         TargetPlatform.windows => false,
+@@ -1073,6 +1074,7 @@ class _AppBarState extends State<AppBar> {
+         title = Semantics(
+           namesRoute: switch (defaultTargetPlatform) {
+             TargetPlatform.android ||
++            TargetPlatform.ohos ||
+             TargetPlatform.fuchsia ||
+             TargetPlatform.linux ||
+             TargetPlatform.windows => true,
+diff --git a/lib/src/bottom_sheet.dart b/lib/src/bottom_sheet.dart
+index 99f4161..dee727c 100644
+--- a/lib/src/bottom_sheet.dart
++++ b/lib/src/bottom_sheet.dart
+@@ -721,6 +721,7 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
+   String _getRouteLabel(MaterialLocalizations localizations) => switch (defaultTargetPlatform) {
+     TargetPlatform.iOS || TargetPlatform.macOS => '',
+     TargetPlatform.android ||
++    TargetPlatform.ohos ||
+     TargetPlatform.fuchsia ||
+     TargetPlatform.linux ||
+     TargetPlatform.windows => localizations.dialogLabel,
+diff --git a/lib/src/calendar_date_picker.dart b/lib/src/calendar_date_picker.dart
+index f6d5aa3..f6c0547 100644
+--- a/lib/src/calendar_date_picker.dart
++++ b/lib/src/calendar_date_picker.dart
+@@ -259,6 +259,7 @@ class _CalendarDatePickerState extends State<CalendarDatePicker> {
+   void _vibrate() {
+     switch (Theme.of(context).platform) {
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -334,6 +335,7 @@ class _CalendarDatePickerState extends State<CalendarDatePicker> {
+             _textDirection,
+           ).catchError(_reportAnnouncementError);
+         case TargetPlatform.android:
++        case TargetPlatform.ohos:
+         case TargetPlatform.iOS:
+         case TargetPlatform.fuchsia:
+           break;
+diff --git a/lib/src/checkbox.dart b/lib/src/checkbox.dart
+index ce8878e..088f64e 100644
+--- a/lib/src/checkbox.dart
++++ b/lib/src/checkbox.dart
+@@ -484,6 +484,7 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
+         final ThemeData theme = Theme.of(context);
+         switch (theme.platform) {
+           case TargetPlatform.android:
++          case TargetPlatform.ohos:
+           case TargetPlatform.fuchsia:
+           case TargetPlatform.linux:
+           case TargetPlatform.windows:
+diff --git a/lib/src/date_picker.dart b/lib/src/date_picker.dart
+index e70a986..087b304 100644
+--- a/lib/src/date_picker.dart
++++ b/lib/src/date_picker.dart
+@@ -2103,6 +2103,7 @@ class _CalendarDateRangePickerState extends State<_CalendarDateRangePicker> {
+   void _vibrate() {
+     switch (Theme.of(context).platform) {
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+         HapticFeedback.vibrate();
+       case TargetPlatform.iOS:
+diff --git a/lib/src/dialog.dart b/lib/src/dialog.dart
+index eb3580d..392b9a7 100644
+--- a/lib/src/dialog.dart
++++ b/lib/src/dialog.dart
+@@ -804,6 +804,8 @@ class AlertDialog extends StatelessWidget {
+     final String? label = switch (defaultTargetPlatform) {
+       TargetPlatform.iOS || TargetPlatform.macOS => semanticLabel,
+       TargetPlatform.android ||
++      TargetPlatform.ohos ||
++      TargetPlatform.ohos ||
+       TargetPlatform.fuchsia ||
+       TargetPlatform.linux ||
+       TargetPlatform.windows => semanticLabel ?? MaterialLocalizations.of(context).alertDialogLabel,
+@@ -1032,6 +1034,7 @@ class _AdaptiveAlertDialog extends AlertDialog {
+     final ThemeData theme = Theme.of(context);
+     switch (theme.platform) {
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -1326,6 +1329,7 @@ class SimpleDialog extends StatelessWidget {
+       case TargetPlatform.iOS:
+         break;
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -1775,6 +1779,7 @@ Future<T?> showAdaptiveDialog<T>({
+   final ThemeData theme = Theme.of(context);
+   switch (theme.platform) {
+     case TargetPlatform.android:
++    case TargetPlatform.ohos:
+     case TargetPlatform.fuchsia:
+     case TargetPlatform.linux:
+     case TargetPlatform.windows:
+diff --git a/lib/src/drawer.dart b/lib/src/drawer.dart
+index fd5f06f..355fdac 100644
+--- a/lib/src/drawer.dart
++++ b/lib/src/drawer.dart
+@@ -267,6 +267,7 @@ class Drawer extends StatelessWidget {
+     final String? label = switch (defaultTargetPlatform) {
+       TargetPlatform.iOS || TargetPlatform.macOS => semanticLabel,
+       TargetPlatform.android ||
++      TargetPlatform.ohos ||
+       TargetPlatform.fuchsia ||
+       TargetPlatform.linux ||
+       TargetPlatform.windows => semanticLabel ?? MaterialLocalizations.of(context).drawerLabel,
+@@ -691,7 +692,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
+ 
+   Widget _buildDrawer(BuildContext context) {
+     final bool isDesktop = switch (Theme.of(context).platform) {
+-      TargetPlatform.android || TargetPlatform.iOS || TargetPlatform.fuchsia => false,
++      TargetPlatform.android || TargetPlatform.ohos || TargetPlatform.iOS || TargetPlatform.fuchsia => false,
+       TargetPlatform.macOS || TargetPlatform.linux || TargetPlatform.windows => true,
+     };
+ 
+@@ -728,6 +729,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
+     } else {
+       final bool platformHasBackButton = switch (defaultTargetPlatform) {
+         TargetPlatform.android => true,
++        TargetPlatform.ohos => true,
+         TargetPlatform.iOS ||
+         TargetPlatform.macOS ||
+         TargetPlatform.fuchsia ||
+diff --git a/lib/src/dropdown_menu.dart b/lib/src/dropdown_menu.dart
+index 4270397..f110229 100644
+--- a/lib/src/dropdown_menu.dart
++++ b/lib/src/dropdown_menu.dart
+@@ -851,7 +851,7 @@ class _DropdownMenuState<T> extends State<DropdownMenu<T>> {
+     return widget.focusNode?.canRequestFocus ??
+         widget.requestFocusOnTap ??
+         switch (Theme.of(context).platform) {
+-          TargetPlatform.iOS || TargetPlatform.android || TargetPlatform.fuchsia => false,
++          TargetPlatform.iOS || TargetPlatform.android || TargetPlatform.ohos || TargetPlatform.fuchsia => false,
+           TargetPlatform.macOS || TargetPlatform.linux || TargetPlatform.windows => true,
+         };
+   }
+diff --git a/lib/src/flexible_space_bar.dart b/lib/src/flexible_space_bar.dart
+index 9134310..670405f 100644
+--- a/lib/src/flexible_space_bar.dart
++++ b/lib/src/flexible_space_bar.dart
+@@ -198,6 +198,7 @@ class _FlexibleSpaceBarState extends State<FlexibleSpaceBar> {
+     return widget.centerTitle ??
+         switch (theme.platform) {
+           TargetPlatform.android ||
++          TargetPlatform.ohos ||
+           TargetPlatform.fuchsia ||
+           TargetPlatform.linux ||
+           TargetPlatform.windows => false,
+@@ -305,6 +306,7 @@ class _FlexibleSpaceBarState extends State<FlexibleSpaceBar> {
+             case TargetPlatform.macOS:
+               title = widget.title;
+             case TargetPlatform.android:
++            case TargetPlatform.ohos:
+             case TargetPlatform.fuchsia:
+             case TargetPlatform.linux:
+             case TargetPlatform.windows:
+diff --git a/lib/src/icons.dart b/lib/src/icons.dart
+index c290142..082c900 100644
+--- a/lib/src/icons.dart
++++ b/lib/src/icons.dart
+@@ -20,6 +20,7 @@ final class PlatformAdaptiveIcons implements Icons {
+   static bool _isCupertino() {
+     switch (defaultTargetPlatform) {
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+diff --git a/lib/src/magnifier.dart b/lib/src/magnifier.dart
+index f35b0bd..ff88dd7 100644
+--- a/lib/src/magnifier.dart
++++ b/lib/src/magnifier.dart
+@@ -49,6 +49,8 @@ class TextMagnifier extends StatefulWidget {
+               return CupertinoTextMagnifier(controller: controller, magnifierInfo: magnifierInfo);
+             case TargetPlatform.android:
+               return TextMagnifier(magnifierInfo: magnifierInfo);
++            case TargetPlatform.ohos:
++              return TextMagnifier(magnifierInfo: magnifierInfo);
+             case TargetPlatform.fuchsia:
+             case TargetPlatform.linux:
+             case TargetPlatform.macOS:
+diff --git a/lib/src/menu_anchor.dart b/lib/src/menu_anchor.dart
+index 3a406f0..32bb6ed 100644
+--- a/lib/src/menu_anchor.dart
++++ b/lib/src/menu_anchor.dart
+@@ -2726,6 +2726,7 @@ class _LocalizedShortcutLabeler {
+         modifier == LogicalKeyboardKey.metaRight) {
+       switch (defaultTargetPlatform) {
+         case TargetPlatform.android:
++        case TargetPlatform.ohos:
+         case TargetPlatform.fuchsia:
+         case TargetPlatform.linux:
+           return localizations.keyboardKeyMeta;
+@@ -2741,6 +2742,7 @@ class _LocalizedShortcutLabeler {
+         modifier == LogicalKeyboardKey.altRight) {
+       switch (defaultTargetPlatform) {
+         case TargetPlatform.android:
++        case TargetPlatform.ohos:
+         case TargetPlatform.fuchsia:
+         case TargetPlatform.linux:
+         case TargetPlatform.windows:
+@@ -2760,6 +2762,7 @@ class _LocalizedShortcutLabeler {
+       // we just return the local translation of "Ctrl".
+       switch (defaultTargetPlatform) {
+         case TargetPlatform.android:
++        case TargetPlatform.ohos:
+         case TargetPlatform.fuchsia:
+         case TargetPlatform.linux:
+         case TargetPlatform.windows:
+@@ -2774,6 +2777,7 @@ class _LocalizedShortcutLabeler {
+         modifier == LogicalKeyboardKey.shiftRight) {
+       switch (defaultTargetPlatform) {
+         case TargetPlatform.android:
++        case TargetPlatform.ohos:
+         case TargetPlatform.fuchsia:
+         case TargetPlatform.linux:
+         case TargetPlatform.windows:
+@@ -4047,6 +4051,7 @@ bool _debugMenuInfo(String message, [Iterable<String>? details]) {
+ bool get _isCupertino {
+   switch (defaultTargetPlatform) {
+     case TargetPlatform.iOS:
++    case TargetPlatform.ohos:
+     case TargetPlatform.macOS:
+       return true;
+     case TargetPlatform.android:
+diff --git a/lib/src/page.dart b/lib/src/page.dart
+index 6574955..e8ed0ca 100644
+--- a/lib/src/page.dart
++++ b/lib/src/page.dart
+@@ -121,6 +121,7 @@ mixin MaterialRouteTransitionMixin<T> on PageRoute<T> {
+         switch (platform) {
+           TargetPlatform.iOS || TargetPlatform.macOS => const CupertinoPageTransitionsBuilder(),
+           TargetPlatform.android ||
++          TargetPlatform.ohos ||
+           TargetPlatform.fuchsia ||
+           TargetPlatform.windows ||
+           TargetPlatform.linux => const ZoomPageTransitionsBuilder(),
+diff --git a/lib/src/page_transitions_theme.dart b/lib/src/page_transitions_theme.dart
+index 4fc458c..310b3f5 100644
+--- a/lib/src/page_transitions_theme.dart
++++ b/lib/src/page_transitions_theme.dart
+@@ -1069,6 +1069,7 @@ class _PageTransitionsThemeTransitionsState<T> extends State<_PageTransitionsThe
+         switch (platform) {
+           TargetPlatform.iOS => const CupertinoPageTransitionsBuilder(),
+           TargetPlatform.android ||
++          TargetPlatform.ohos ||
+           TargetPlatform.fuchsia ||
+           TargetPlatform.windows ||
+           TargetPlatform.macOS ||
+diff --git a/lib/src/popup_menu.dart b/lib/src/popup_menu.dart
+index 77220bc..4f09ec2 100644
+--- a/lib/src/popup_menu.dart
++++ b/lib/src/popup_menu.dart
+@@ -1207,6 +1207,7 @@ Future<T?> showMenu<T>({
+     case TargetPlatform.macOS:
+       break;
+     case TargetPlatform.android:
++    case TargetPlatform.ohos:
+     case TargetPlatform.fuchsia:
+     case TargetPlatform.linux:
+     case TargetPlatform.windows:
+diff --git a/lib/src/progress_indicator.dart b/lib/src/progress_indicator.dart
+index b1e2518..9d488d3 100644
+--- a/lib/src/progress_indicator.dart
++++ b/lib/src/progress_indicator.dart
+@@ -1249,6 +1249,7 @@ class _CircularProgressIndicatorState extends State<CircularProgressIndicator>
+               case TargetPlatform.macOS:
+                 return _buildCupertinoIndicator(context);
+               case TargetPlatform.android:
++              case TargetPlatform.ohos:
+               case TargetPlatform.fuchsia:
+               case TargetPlatform.linux:
+               case TargetPlatform.windows:
+diff --git a/lib/src/radio.dart b/lib/src/radio.dart
+index 03e10bd..553dedb 100644
+--- a/lib/src/radio.dart
++++ b/lib/src/radio.dart
+@@ -490,6 +490,7 @@ class _RadioState<T> extends State<Radio<T>> {
+         final ThemeData theme = Theme.of(context);
+         switch (theme.platform) {
+           case TargetPlatform.android:
++          case TargetPlatform.ohos:
+           case TargetPlatform.fuchsia:
+           case TargetPlatform.linux:
+           case TargetPlatform.windows:
+diff --git a/lib/src/range_slider.dart b/lib/src/range_slider.dart
+index b2f156c..5cf0a6f 100644
+--- a/lib/src/range_slider.dart
++++ b/lib/src/range_slider.dart
+@@ -1448,6 +1448,7 @@ class _RenderRangeSlider extends RenderBox with RelayoutWhenSystemFontsChangeMix
+         // Matches iOS implementation of material slider.
+         return 0.1;
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.macOS:
+diff --git a/lib/src/refresh_indicator.dart b/lib/src/refresh_indicator.dart
+index 236e179..3df314d 100644
+--- a/lib/src/refresh_indicator.dart
++++ b/lib/src/refresh_indicator.dart
+@@ -702,6 +702,7 @@ class RefreshIndicatorState extends State<RefreshIndicator>
+                             final ThemeData theme = Theme.of(context);
+                             switch (theme.platform) {
+                               case TargetPlatform.android:
++                              case TargetPlatform.ohos:
+                               case TargetPlatform.fuchsia:
+                               case TargetPlatform.linux:
+                               case TargetPlatform.windows:
+diff --git a/lib/src/reorderable_list.dart b/lib/src/reorderable_list.dart
+index 0c423b7..88bc215 100644
+--- a/lib/src/reorderable_list.dart
++++ b/lib/src/reorderable_list.dart
+@@ -473,6 +473,7 @@ class _ReorderableListViewState extends State<ReorderableListView> {
+ 
+         case TargetPlatform.iOS:
+         case TargetPlatform.android:
++        case TargetPlatform.ohos:
+         case TargetPlatform.fuchsia:
+           return ReorderableDelayedDragStartListener(key: itemGlobalKey, index: index, child: item);
+       }
+diff --git a/lib/src/scaffold.dart b/lib/src/scaffold.dart
+index 37f53a2..4966350 100644
+--- a/lib/src/scaffold.dart
++++ b/lib/src/scaffold.dart
+@@ -3286,6 +3286,7 @@ class ScaffoldState extends State<Scaffold>
+       TargetPlatform.iOS ||
+       TargetPlatform.macOS => widget.primary ? _HitTestableAtOrigin(_statusBarKey) : null,
+       TargetPlatform.android ||
++      TargetPlatform.ohos ||
+       TargetPlatform.fuchsia ||
+       TargetPlatform.linux ||
+       TargetPlatform.windows => null,
+diff --git a/lib/src/scrollbar.dart b/lib/src/scrollbar.dart
+index d38ad02..ee29b79 100644
+--- a/lib/src/scrollbar.dart
++++ b/lib/src/scrollbar.dart
+@@ -357,6 +357,8 @@ class _MaterialScrollbarState extends RawScrollbarState<_MaterialScrollbar> {
+     switch (theme.platform) {
+       case TargetPlatform.android:
+         _useAndroidScrollbar = true;
++      case TargetPlatform.ohos:
++        _useAndroidScrollbar = true;
+       case TargetPlatform.iOS:
+       case TargetPlatform.linux:
+       case TargetPlatform.fuchsia:
+diff --git a/lib/src/search.dart b/lib/src/search.dart
+index 6ab7507..2447c25 100644
+--- a/lib/src/search.dart
++++ b/lib/src/search.dart
+@@ -622,6 +622,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
+       case TargetPlatform.macOS:
+         routeName = '';
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+diff --git a/lib/src/search_anchor.dart b/lib/src/search_anchor.dart
+index a91b38b..f004d04 100644
+--- a/lib/src/search_anchor.dart
++++ b/lib/src/search_anchor.dart
+@@ -590,7 +590,7 @@ class _SearchAnchorState extends State<SearchAnchor> {
+   bool getShowFullScreenView() {
+     return widget.isFullScreen ??
+         switch (Theme.of(context).platform) {
+-          TargetPlatform.iOS || TargetPlatform.android || TargetPlatform.fuchsia => true,
++          TargetPlatform.iOS || TargetPlatform.android || TargetPlatform.ohos || TargetPlatform.fuchsia => true,
+           TargetPlatform.macOS || TargetPlatform.linux || TargetPlatform.windows => false,
+         };
+   }
+diff --git a/lib/src/selectable_text.dart b/lib/src/selectable_text.dart
+index 171b9b8..927146f 100644
+--- a/lib/src/selectable_text.dart
++++ b/lib/src/selectable_text.dart
+@@ -634,6 +634,7 @@ class _SelectableTextState extends State<SelectableText>
+         }
+         return;
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -730,6 +731,7 @@ class _SelectableTextState extends State<SelectableText>
+         cursorOffset = Offset(iOSHorizontalOffset / MediaQuery.devicePixelRatioOf(context), 0);
+ 
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+         forcePressEnabled = false;
+         textSelectionControls ??= materialTextSelectionHandleControls;
+diff --git a/lib/src/selection_area.dart b/lib/src/selection_area.dart
+index 4516f70..e6e4736 100644
+--- a/lib/src/selection_area.dart
++++ b/lib/src/selection_area.dart
+@@ -138,7 +138,7 @@ class SelectionAreaState extends State<SelectionArea> {
+     final TextSelectionControls controls =
+         widget.selectionControls ??
+         switch (Theme.of(context).platform) {
+-          TargetPlatform.android || TargetPlatform.fuchsia => materialTextSelectionHandleControls,
++          TargetPlatform.android || TargetPlatform.ohos || TargetPlatform.fuchsia => materialTextSelectionHandleControls,
+           TargetPlatform.linux || TargetPlatform.windows => desktopTextSelectionHandleControls,
+           TargetPlatform.iOS => cupertinoTextSelectionHandleControls,
+           TargetPlatform.macOS => cupertinoDesktopTextSelectionHandleControls,
+diff --git a/lib/src/slider.dart b/lib/src/slider.dart
+index 87e84ff..6813a7b 100644
+--- a/lib/src/slider.dart
++++ b/lib/src/slider.dart
+@@ -853,6 +853,7 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
+           final ThemeData theme = Theme.of(context);
+           switch (theme.platform) {
+             case TargetPlatform.android:
++            case TargetPlatform.ohos:
+             case TargetPlatform.fuchsia:
+             case TargetPlatform.linux:
+             case TargetPlatform.windows:
+@@ -982,6 +983,7 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
+     VoidCallback? handleDidGainAccessibilityFocus;
+     switch (theme.platform) {
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.iOS:
+       case TargetPlatform.linux:
+@@ -1539,6 +1541,7 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
+         // Matches iOS implementation of material slider.
+         return 0.1;
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+diff --git a/lib/src/switch.dart b/lib/src/switch.dart
+index dd0fc48..ad63052 100644
+--- a/lib/src/switch.dart
++++ b/lib/src/switch.dart
+@@ -599,6 +599,7 @@ class Switch extends StatelessWidget {
+       case _SwitchType.adaptive:
+         switch (Theme.of(context).platform) {
+           case TargetPlatform.android:
++          case TargetPlatform.ohos:
+           case TargetPlatform.fuchsia:
+           case TargetPlatform.linux:
+           case TargetPlatform.windows:
+@@ -733,6 +734,7 @@ class _MaterialSwitchState extends State<_MaterialSwitch>
+           case _SwitchType.adaptive:
+             switch (Theme.of(context).platform) {
+               case TargetPlatform.android:
++              case TargetPlatform.ohos:
+               case TargetPlatform.fuchsia:
+               case TargetPlatform.linux:
+               case TargetPlatform.windows:
+@@ -807,6 +809,7 @@ class _MaterialSwitchState extends State<_MaterialSwitch>
+       case _SwitchType.adaptive:
+         switch (Theme.of(context).platform) {
+           case TargetPlatform.android:
++          case TargetPlatform.ohos:
+           case TargetPlatform.fuchsia:
+           case TargetPlatform.linux:
+           case TargetPlatform.windows:
+@@ -907,6 +910,7 @@ class _MaterialSwitchState extends State<_MaterialSwitch>
+         switchTheme = switchAdaptation.adapt(theme, switchTheme);
+         switch (theme.platform) {
+           case TargetPlatform.android:
++          case TargetPlatform.ohos:
+           case TargetPlatform.fuchsia:
+           case TargetPlatform.linux:
+           case TargetPlatform.windows:
+@@ -1871,6 +1875,7 @@ class _SwitchThemeAdaptation extends Adaptation<SwitchThemeData> {
+   SwitchThemeData adapt(ThemeData theme, SwitchThemeData defaultValue) {
+     switch (theme.platform) {
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+diff --git a/lib/src/text_field.dart b/lib/src/text_field.dart
+index 56a46a6..3b5d043 100644
+--- a/lib/src/text_field.dart
++++ b/lib/src/text_field.dart
+@@ -976,6 +976,7 @@ class TextField extends StatefulWidget {
+           editableTextState: editableTextState,
+         );
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -1471,6 +1472,10 @@ class _TextFieldState extends State<TextField>
+         if (cause == SelectionChangedCause.longPress) {
+           _editableText?.bringIntoView(selection.extent);
+         }
++      case TargetPlatform.ohos:
++        if (cause == SelectionChangedCause.longPress) {
++          _editableText?.bringIntoView(selection.extent);
++        }
+     }
+ 
+     switch (Theme.of(context).platform) {
+@@ -1478,6 +1483,8 @@ class _TextFieldState extends State<TextField>
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.android:
+         break;
++      case TargetPlatform.ohos:
++        break;
+       case TargetPlatform.macOS:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -1605,6 +1612,7 @@ class _TextFieldState extends State<TextField>
+           widget.spellCheckConfiguration,
+         );
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+@@ -1664,6 +1672,7 @@ class _TextFieldState extends State<TextField>
+         };
+ 
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+         forcePressEnabled = false;
+         textSelectionControls ??= materialTextSelectionHandleControls;
+diff --git a/lib/src/theme_data.dart b/lib/src/theme_data.dart
+index 3669b96..63020ed 100644
+--- a/lib/src/theme_data.dart
++++ b/lib/src/theme_data.dart
+@@ -478,6 +478,7 @@ class ThemeData with Diagnosticable {
+     platform ??= defaultTargetPlatform;
+     switch (platform) {
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.iOS:
+         materialTapTargetSize ??= MaterialTapTargetSize.padded;
+@@ -3373,7 +3374,7 @@ class VisualDensity with Diagnosticable {
+   ///   adaptive based on [defaultTargetPlatform].
+   static VisualDensity defaultDensityForPlatform(TargetPlatform platform) {
+     return switch (platform) {
+-      TargetPlatform.android || TargetPlatform.iOS || TargetPlatform.fuchsia => standard,
++      TargetPlatform.android || TargetPlatform.iOS || TargetPlatform.ohos || TargetPlatform.fuchsia => standard,
+       TargetPlatform.linux || TargetPlatform.macOS || TargetPlatform.windows => compact,
+     };
+   }
+diff --git a/lib/src/time_picker.dart b/lib/src/time_picker.dart
+index c900dc2..4b56798 100644
+--- a/lib/src/time_picker.dart
++++ b/lib/src/time_picker.dart
+@@ -2919,6 +2919,7 @@ class _TimePickerState extends State<_TimePicker> with RestorationMixin {
+   void _vibrate() {
+     switch (Theme.of(context).platform) {
+       case TargetPlatform.android:
++      case TargetPlatform.ohos:
+       case TargetPlatform.fuchsia:
+       case TargetPlatform.linux:
+       case TargetPlatform.windows:
+diff --git a/lib/src/tooltip.dart b/lib/src/tooltip.dart
+index 9ace292..96235f9 100644
+--- a/lib/src/tooltip.dart
++++ b/lib/src/tooltip.dart
+@@ -450,7 +450,7 @@ class TooltipState extends State<Tooltip> with SingleTickerProviderStateMixin {
+   double _getDefaultTooltipHeight() {
+     return switch (Theme.of(context).platform) {
+       TargetPlatform.macOS || TargetPlatform.linux || TargetPlatform.windows => 24.0,
+-      TargetPlatform.android || TargetPlatform.fuchsia || TargetPlatform.iOS => 32.0,
++      TargetPlatform.android || TargetPlatform.ohos || TargetPlatform.fuchsia || TargetPlatform.iOS => 32.0,
+     };
+   }
+ 
+@@ -460,6 +460,7 @@ class TooltipState extends State<Tooltip> with SingleTickerProviderStateMixin {
+       TargetPlatform.linux ||
+       TargetPlatform.windows => const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+       TargetPlatform.android ||
++      TargetPlatform.ohos ||
+       TargetPlatform.fuchsia ||
+       TargetPlatform.iOS => const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+     };
+@@ -468,7 +469,7 @@ class TooltipState extends State<Tooltip> with SingleTickerProviderStateMixin {
+   static double _getDefaultFontSize(TargetPlatform platform) {
+     return switch (platform) {
+       TargetPlatform.macOS || TargetPlatform.linux || TargetPlatform.windows => 12.0,
+-      TargetPlatform.android || TargetPlatform.fuchsia || TargetPlatform.iOS => 14.0,
++      TargetPlatform.android || TargetPlatform.ohos || TargetPlatform.fuchsia || TargetPlatform.iOS => 14.0,
+     };
+   }
+ 
+diff --git a/lib/src/typography.dart b/lib/src/typography.dart
+index 985ebab..bc38e9b 100644
+--- a/lib/src/typography.dart
++++ b/lib/src/typography.dart
+@@ -219,7 +219,7 @@ class Typography with Diagnosticable {
+     assert(platform != null || (black != null && white != null));
+     final (TextTheme blackResolved, TextTheme whiteResolved) = switch (platform) {
+       TargetPlatform.iOS => (black ?? blackCupertino, white ?? whiteCupertino),
+-      TargetPlatform.android ||
++      TargetPlatform.android || TargetPlatform.ohos ||
+       TargetPlatform.fuchsia => (black ?? blackMountainView, white ?? whiteMountainView),
+       TargetPlatform.windows => (black ?? blackRedmond, white ?? whiteRedmond),
+       TargetPlatform.macOS => (black ?? blackRedwoodCity, white ?? whiteRedwoodCity),

@@ -22,6 +22,7 @@ class GoBuilder {
     required this.notice,
     this.harnessInputs = const [],
     this.androidToolchain,
+    this.openHarmonyToolchain,
   });
 
   final String rootDir;
@@ -30,11 +31,12 @@ class GoBuilder {
   final BuildNotice notice;
   final List<String> harnessInputs;
   final AndroidToolchain? androidToolchain;
+  final OpenHarmonyToolchain? openHarmonyToolchain;
 
   String get _corePath => p.join(rootDir, config.coreDir);
   String get _outputPath => p.join(rootDir, config.outputDir);
 
-  String _resolveCc(Target target) {
+  String _resolveCcAndroid(Target target) {
     final toolchain = androidToolchain;
     if (toolchain == null) {
       throw BuildException('Android target $target needs an NDK toolchain');
@@ -45,6 +47,18 @@ class GoBuilder {
         'NDK compiler not found: $cc (API ${toolchain.apiLevel} from the '
         'app minSdk; the NDK Flutter selected may be too old)',
       );
+    }
+    return cc;
+  }
+
+  String _resolveCcOpenHarmony(Target target) {
+    final toolchain = openHarmonyToolchain;
+    if (toolchain == null) {
+      throw BuildException('OpenHarmony target $target needs an NDK toolchain');
+    }
+    final cc = toolchain.clangFor(target);
+    if (!File(cc).existsSync()) {
+      throw BuildException('NDK compiler not found: $cc');
     }
     return cc;
   }
@@ -87,15 +101,24 @@ class GoBuilder {
 
           final outputs = <String>[outFile];
           if (target.isLib) {
-            outputs.addAll(
-              _installAndroidOutput(
+            final extra = switch (target.goos) {
+              'android' => _installAndroidOutput(
                 abi: target.abi!,
                 platformDir: p.join(_outputPath, target.platformDir),
                 stagingDir: stagingDir.path,
                 libName: fileName,
                 outFile: outFile,
               ),
-            );
+              'openharmony' => _installOpenHarmonyOutput(
+                abi: target.abi!,
+                platformDir: p.join(_outputPath, target.platformDir),
+                stagingDir: stagingDir.path,
+                libName: fileName,
+                outFile: outFile,
+              ),
+              _ => throw BuildException('Unknown GOOS: ${target.goos}'),
+            };
+            outputs.addAll(extra);
           } else {
             replaceFile(staged, outFile);
           }
@@ -114,10 +137,20 @@ class GoBuilder {
   Map<String, String> _buildEnvironment(Target target) {
     final env = <String, String>{'GOOS': target.goos, 'GOARCH': target.goarch};
     if (target.isLib) {
-      env
-        ..['CGO_ENABLED'] = '1'
-        ..['CC'] = _resolveCc(target)
-        ..['CFLAGS'] = '-O3 -Werror';
+      switch (target.goos) {
+        case 'android':
+          env
+            ..['CGO_ENABLED'] = '1'
+            ..['CC'] = _resolveCcAndroid(target)
+            ..['CFLAGS'] = '-O3 -Werror';
+        case 'openharmony':
+          env
+            ..['CGO_ENABLED'] = '1'
+            ..['CC'] = _resolveCcOpenHarmony(target)
+            ..['CFLAGS'] = '-O3 -Werror';
+        default:
+          throw BuildException('Unknown GOOS: $target.goos');
+      }
     } else {
       env['CGO_ENABLED'] = '0';
     }
@@ -266,6 +299,51 @@ class GoBuilder {
     replaceFile(p.join(stagingDir, libName), outFile);
     copyFile(outFile, p.join(jniLibsPath, libName));
     outputs.add(p.join(jniLibsPath, libName));
+
+    final generatedHeaders = Directory(stagingDir).listSync();
+    final staticHeaders = Directory(_corePath).listSync();
+    for (final file in [...generatedHeaders, ...staticHeaders]) {
+      if (!file.path.endsWith('.h')) continue;
+      final headerName = p.basename(file.path);
+      final includePath = p.join(includesPath, headerName);
+      final cppIncludePath = p.join(cppIncludesPath, headerName);
+      copyFile(file.path, includePath);
+      copyFile(file.path, cppIncludePath);
+      outputs
+        ..add(includePath)
+        ..add(cppIncludePath);
+    }
+    return outputs;
+  }
+
+  List<String> _installOpenHarmonyOutput({
+    required String abi,
+    required String platformDir,
+    required String stagingDir,
+    required String libName,
+    required String outFile,
+  }) {
+    final includesPath = p.join(platformDir, 'includes', abi);
+    final openHarmonyCoreMainPath = p.join(rootDir, 'ohos', 'core');
+    final napiLibsPath = p.join(openHarmonyCoreMainPath, 'libs', abi);
+    final cppIncludesPath = p.join(
+      openHarmonyCoreMainPath,
+      'src',
+      'main',
+      'cpp',
+      'includes',
+      abi,
+    );
+    final outputs = <String>[];
+
+    ensureDir(includesPath);
+    _clearDirectory(includesPath);
+    ensureDir(cppIncludesPath);
+    _clearDirectory(cppIncludesPath);
+
+    replaceFile(p.join(stagingDir, libName), outFile);
+    copyFile(outFile, p.join(napiLibsPath, libName));
+    outputs.add(p.join(napiLibsPath, libName));
 
     final generatedHeaders = Directory(stagingDir).listSync();
     final staticHeaders = Directory(_corePath).listSync();

@@ -144,3 +144,5 @@ require (
 	golang.org/x/tools v0.24.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
+
+replace github.com/metacubex/gvisor => github.com/tljk/gvisor-ohos v0.0.0-20261024090803-431429b56e2c

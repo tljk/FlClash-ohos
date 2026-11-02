@@ -375,7 +375,7 @@ void main() {
   });
 
   group('suspend', () {
-    test('skips starting the core on an excluded SSID', () async {
+    test('stops the core instead of starting it on an excluded SSID', () async {
       container.dispose();
       action = TestSetupAction();
       container = ProviderContainer(
@@ -392,7 +392,7 @@ void main() {
 
       await container.read(setupActionProvider.notifier).setRunning(true);
 
-      expect(action.coreRunningCalls, isEmpty);
+      expect(action.coreRunningCalls, [false]);
     });
 
     test('still stops the core on an excluded SSID', () async {

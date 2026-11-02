@@ -14,6 +14,13 @@ dependencies:
   path: ^1.9.0
   yaml: ^3.1.2
 
+dependency_overrides:
+  code_assets:
+    git:
+      url: https://gitcode.com/CPF-Flutter/fluttertpc_dart_native.git
+      path: pkgs/code_assets
+      ref: flutter_3.47.7_deps
+
 dev_dependencies:
   flutter_lints: ^6.0.0
   test: ^1.24.0

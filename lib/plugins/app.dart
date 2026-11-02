@@ -193,6 +193,13 @@ class App {
       return null;
     }
   }
+
+  Future<bool?> setBackgroundRunning(bool value) async {
+    if (!system.isOhos) return false;
+    return methodChannel.invokeMethod<bool>('setBackgroundRunning', {
+      'value': value,
+    });
+  }
 }
 
-final app = system.isAndroid ? App() : null;
+final app = system.isAndroid || system.isOhos ? App() : null;

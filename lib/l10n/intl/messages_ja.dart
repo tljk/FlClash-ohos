@@ -362,6 +362,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "daysAgo": m4,
     "defaultText": MessageLookupByLibrary.simpleMessage("デフォルト"),
+    "definedApps": MessageLookupByLibrary.simpleMessage("定義済みアプリ"),
     "delay": MessageLookupByLibrary.simpleMessage("遅延"),
     "delayTest": MessageLookupByLibrary.simpleMessage("遅延テスト"),
     "delete": MessageLookupByLibrary.simpleMessage("削除"),
@@ -692,8 +693,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "ipv6Timeout": MessageLookupByLibrary.simpleMessage("IPv6タイムアウト（ms）"),
     "ja": MessageLookupByLibrary.simpleMessage("日本語"),
     "justNow": MessageLookupByLibrary.simpleMessage("たった今"),
+    "keep": MessageLookupByLibrary.simpleMessage("最近のタスクから削除"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
       "TCPキープアライブ間隔",
+    ),
+    "keepDesc": MessageLookupByLibrary.simpleMessage(
+      "アプリが最近のタスクから削除されてもVPNサービスを維持",
     ),
     "key": MessageLookupByLibrary.simpleMessage("キー"),
     "language": MessageLookupByLibrary.simpleMessage("言語"),
@@ -863,6 +868,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "カスタムモード：プロキシ、プロキシグループ、ルールを完全にカスタマイズできます",
     ),
+    "packageName": MessageLookupByLibrary.simpleMessage("パッケージ名"),
     "palette": MessageLookupByLibrary.simpleMessage("パレット"),
     "password": MessageLookupByLibrary.simpleMessage("パスワード"),
     "paste": MessageLookupByLibrary.simpleMessage("貼り付け"),

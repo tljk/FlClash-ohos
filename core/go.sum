@@ -127,8 +127,6 @@ github.com/metacubex/fswatch v0.1.1 h1:jqU7C/v+g0qc2RUFgmAOPoVvfl2BXXUXEumn6oQux
 github.com/metacubex/fswatch v0.1.1/go.mod h1:czrTT7Zlbz7vWft8RQu9Qqh+JoX+Nnb+UabuyN1YsgI=
 github.com/metacubex/gopacket v1.1.20-0.20230608035415-7e2f98a3e759 h1:cjd4biTvOzK9ubNCCkQ+ldc4YSH/rILn53l/xGBFHHI=
 github.com/metacubex/gopacket v1.1.20-0.20230608035415-7e2f98a3e759/go.mod h1:UHOv2xu+RIgLwpXca7TLrXleEd4oR3sPatW6IF8wU88=
-github.com/metacubex/gvisor v0.0.0-20260922041103-e2cbcd6e7400 h1:r9YO+xZUWi+xQROzdYkKL2twoliSJh34vOHMVAqsaL8=
-github.com/metacubex/gvisor v0.0.0-20260922041103-e2cbcd6e7400/go.mod h1:mBJW3UXUusd8ZYO5M6mig0uScIey9iIubgdIiQAk2ug=
 github.com/metacubex/hkdf v0.1.0 h1:fPA6VzXK8cU1foc/TOmGCDmSa7pZbxlnqhl3RNsthaA=
 github.com/metacubex/hkdf v0.1.0/go.mod h1:3seEfds3smgTAXqUGn+tgEJH3uXdsUjOiduG/2EtvZ4=
 github.com/metacubex/hpke v0.1.0 h1:gu2jUNhraehWi0P/z5HX2md3d7L1FhPQE6/Q0E9r9xQ=
@@ -262,6 +260,8 @@ github.com/tailscale/hujson v0.0.0-20221223112325-20486734a56a h1:SJy1Pu0eH1C29X
 github.com/tailscale/hujson v0.0.0-20221223112325-20486734a56a/go.mod h1:DFSS3NAGHthKo1gTlmEcSBiZrRJXi28rLNd/1udP1c8=
 github.com/tailscale/peercred v0.0.0-20250107143737-35a0c7bd7edc h1:24heQPtnFR+yfntqhI3oAu9i27nEojcQ4NuBQOo5ZFA=
 github.com/tailscale/peercred v0.0.0-20250107143737-35a0c7bd7edc/go.mod h1:f93CXfllFsO9ZQVq+Zocb1Gp4G5Fz0b0rXHLOzt/Djc=
+github.com/tljk/gvisor-ohos v0.0.0-20261024090803-431429b56e2c h1:y+NnFj0L3uTUeghh2IyanbWCkH+eVPBuhsGPnctw9to=
+github.com/tljk/gvisor-ohos v0.0.0-20261024090803-431429b56e2c/go.mod h1:mBJW3UXUusd8ZYO5M6mig0uScIey9iIubgdIiQAk2ug=
 github.com/u-root/uio v0.0.0-20230220225925-ffce2a382923 h1:tHNk7XK9GkmKUR6Gh8gVBKXc2MVSZ4G/NnWLtzw4gNA=
 github.com/u-root/uio v0.0.0-20230220225925-ffce2a382923/go.mod h1:eLL9Nub3yfAho7qB0MzZizFhTU2QkLeoVsWdHtDW264=
 github.com/ulikunitz/xz v0.5.15 h1:9DNdB5s+SgV3bQ2ApL10xRc35ck0DuIX/isZvIk+ubY=

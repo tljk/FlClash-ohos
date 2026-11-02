@@ -435,6 +435,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "daysAgo": m4,
     "defaultText": MessageLookupByLibrary.simpleMessage("Default"),
+    "definedApps": MessageLookupByLibrary.simpleMessage("Defined apps"),
     "delay": MessageLookupByLibrary.simpleMessage("Delay"),
     "delayTest": MessageLookupByLibrary.simpleMessage("Delay test"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
@@ -816,8 +817,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "ipv6Timeout": MessageLookupByLibrary.simpleMessage("IPv6 timeout (ms)"),
     "ja": MessageLookupByLibrary.simpleMessage("Japanese"),
     "justNow": MessageLookupByLibrary.simpleMessage("Just now"),
+    "keep": MessageLookupByLibrary.simpleMessage("Remove from recents"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
       "TCP keep-alive interval",
+    ),
+    "keepDesc": MessageLookupByLibrary.simpleMessage(
+      "Keep the VPN service alive when the app is removed from recent tasks",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Key"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),
@@ -1017,6 +1022,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "overwriteTypeCustomDesc": MessageLookupByLibrary.simpleMessage(
       "Custom mode: fully customize proxies, proxy groups and rules",
     ),
+    "packageName": MessageLookupByLibrary.simpleMessage("Package name"),
     "palette": MessageLookupByLibrary.simpleMessage("Palette"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "paste": MessageLookupByLibrary.simpleMessage("Paste"),

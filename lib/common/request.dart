@@ -78,8 +78,13 @@ class Request {
       final data = response.data as Map<String, dynamic>;
       final remoteVersion = data['tag_name'];
       final version = globalState.packageInfo.version;
+      final buildNumber = globalState.packageInfo.buildNumber;
       final hasUpdate =
-          compareVersions(remoteVersion.replaceAll('v', ''), version) > 0;
+          compareVersions(
+            remoteVersion.replaceAll('v', ''),
+            '$version+$buildNumber',
+          ) >
+          0;
       if (!hasUpdate) return null;
       return data;
     } catch (e) {

@@ -187,7 +187,9 @@ Future<({String yaml, String md5})> _makeRealProfileTask(
   rawConfig['socks-port'] = realPatchConfig.socksPort;
   rawConfig['redir-port'] = realPatchConfig.redirPort;
   rawConfig['tproxy-port'] = realPatchConfig.tproxyPort;
-  rawConfig['find-process-mode'] = realPatchConfig.findProcessMode.name;
+  rawConfig['find-process-mode'] = system.isOhos
+      ? FindProcessMode.off.name
+      : realPatchConfig.findProcessMode.name;
   rawConfig['allow-lan'] = realPatchConfig.allowLan;
   // The app owns local inbound authentication; a profile-provided
   // skip-auth-prefixes could silently exempt loopback and defeat it.
