@@ -200,9 +200,15 @@ dependency_overrides:
       path: pkgs/native_toolchain_c
       ref: flutter_3.47.7_deps
   material_ui:
-    path: ../material_ui
+    git:
+      url: https://gitcode.com/CPF-Flutter/flutter_packages.git
+      path: packages/material_ui
+      ref: oh-3.47.7-dev
   cupertino_ui:
-    path: ../cupertino_ui
+    git:
+      url: https://gitcode.com/CPF-Flutter/flutter_packages.git
+      path: packages/cupertino_ui
+      ref: oh-3.47.7-dev
 
 dev_dependencies:
   flutter_test:

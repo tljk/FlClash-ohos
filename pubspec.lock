@@ -295,10 +295,12 @@ packages:
   cupertino_ui:
     dependency: "direct overridden"
     description:
-      path: "../cupertino_ui"
-      relative: true
-    source: path
-    version: "1.1.4"
+      path: "packages/cupertino_ui"
+      ref: "oh-3.47.7-dev"
+      resolved-ref: "817e1de1162574b66013466005c66ed175a367d9"
+      url: "https://gitcode.com/CPF-Flutter/flutter_packages.git"
+    source: git
+    version: "1.1.5"
   dart_style:
     dependency: transitive
     description:
@@ -901,10 +903,12 @@ packages:
   material_ui:
     dependency: "direct main"
     description:
-      path: "../material_ui"
-      relative: true
-    source: path
-    version: "1.8.0"
+      path: "packages/material_ui"
+      ref: "oh-3.47.7-dev"
+      resolved-ref: "817e1de1162574b66013466005c66ed175a367d9"
+      url: "https://gitcode.com/CPF-Flutter/flutter_packages.git"
+    source: git
+    version: "1.9.0"
   meta:
     dependency: transitive
     description:

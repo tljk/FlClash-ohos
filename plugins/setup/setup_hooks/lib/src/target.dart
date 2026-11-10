@@ -94,7 +94,7 @@ class Target {
       'x86_64' => 'x86_64-unknown-linux-ohos',
       _ => throw BuildException('Not an OpenHarmony target: $this'),
     },
-    _ => throw BuildException('Unknown GOOS: ${goos}'),
+    _ => throw BuildException('Unknown GOOS: $goos'),
   };
 
   String get rustTriple {

@@ -2,8 +2,8 @@ name: build
 
 on:
   push:
-    # branches:
-    #   - '**'
+    branches:
+      - '**'
     tags:
       - 'v*'
   workflow_dispatch:
@@ -63,17 +63,6 @@ jobs:
           cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
           pub-cache: true
       - run: bash .github/revert_flutter_ohos.sh
-
-      - name: Cache downloaded package archives
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ runner.tool_cache }}/material_ui-1.8.0.tar.gz
-            ${{ runner.tool_cache }}/cupertino_ui-1.1.4.tar.gz
-          key: ohos-pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', '.github/material_ui_ohos.patch', '.github/cupertino_ui_ohos.patch') }}
-          restore-keys: |
-            ohos-pub-${{ runner.os }}-
-      - run: bash .github/setup_packages_ohos.sh
 
       - name: Install dependencies
         run: flutter pub get
@@ -295,17 +284,6 @@ jobs:
           pub-cache: true
       - run: bash .github/revert_flutter_ohos.sh
 
-      - name: Cache downloaded package archives
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ runner.tool_cache }}/material_ui-1.8.0.tar.gz
-            ${{ runner.tool_cache }}/cupertino_ui-1.1.4.tar.gz
-          key: ohos-pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', '.github/material_ui_ohos.patch', '.github/cupertino_ui_ohos.patch') }}
-          restore-keys: |
-            ohos-pub-${{ runner.os }}-
-      - run: bash .github/setup_packages_ohos.sh
-
       - name: Install dependencies
         run: flutter pub get
 
@@ -507,18 +485,6 @@ jobs:
           version: ${{ env.SDK_VERSION }}
           cache: true
 
-      - name: Cache downloaded package archives
-        if: startsWith(matrix.platform, 'ohos')
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ runner.tool_cache }}/material_ui-1.8.0.tar.gz
-            ${{ runner.tool_cache }}/cupertino_ui-1.1.4.tar.gz
-          key: ohos-pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', '.github/material_ui_ohos.patch', '.github/cupertino_ui_ohos.patch') }}
-          restore-keys: |
-            ohos-pub-${{ runner.os }}-
-      - run: bash .github/setup_packages_ohos.sh
-
       - name: Get Flutter Dependency
         run: |
           flutter --version
@@ -583,17 +549,6 @@ jobs:
           cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
           pub-cache: true
       - run: bash .github/revert_flutter_ohos.sh
-
-      - name: Cache downloaded package archives
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ runner.tool_cache }}/material_ui-1.8.0.tar.gz
-            ${{ runner.tool_cache }}/cupertino_ui-1.1.4.tar.gz
-          key: ohos-pub-${{ runner.os }}-${{ hashFiles('pubspec.lock', '.github/material_ui_ohos.patch', '.github/cupertino_ui_ohos.patch') }}
-          restore-keys: |
-            ohos-pub-${{ runner.os }}-
-      - run: bash .github/setup_packages_ohos.sh
 
       - name: Install dependencies
         run: flutter pub get
