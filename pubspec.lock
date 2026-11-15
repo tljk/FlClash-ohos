@@ -46,11 +46,11 @@ packages:
     dependency: "direct main"
     description:
       path: app_links
-      ref: "br_v7.0.0_ohos"
-      resolved-ref: "109fac28a22c3f5ab403049adec46412dacf1acd"
+      ref: "br_7.2.2_ohos_dev"
+      resolved-ref: a93baf6700d5f3cefd36c9ad89507413ca955715
       url: "https://gitcode.com/CPF-Flutter/fluttertpc_app_links.git"
     source: git
-    version: "7.0.0"
+    version: "7.2.2"
   app_links_linux:
     dependency: transitive
     description:
@@ -297,7 +297,7 @@ packages:
     description:
       path: "packages/cupertino_ui"
       ref: "oh-3.47.7-dev"
-      resolved-ref: "817e1de1162574b66013466005c66ed175a367d9"
+      resolved-ref: a0e6cebef8ca58767fcd6d2afdedc3fa1b5a88c1
       url: "https://gitcode.com/CPF-Flutter/flutter_packages.git"
     source: git
     version: "1.1.5"
@@ -650,13 +650,14 @@ packages:
     source: hosted
     version: "2.3.2"
   hooks:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: hooks
-      sha256: eaac480a35ec0814146c2c48d96aaa829e0e44a7662c88ae84c9edf4bc35651f
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
+      path: "pkgs/hooks"
+      ref: "flutter_3.47.7_deps"
+      resolved-ref: "124484c19678e7fbc21de3ef6726a5e6bd51832e"
+      url: "https://gitcode.com/openharmony-sig/fluttertpc_dart_native.git"
+    source: git
+    version: "2.0.2"
   http:
     dependency: transitive
     description:
@@ -905,7 +906,7 @@ packages:
     description:
       path: "packages/material_ui"
       ref: "oh-3.47.7-dev"
-      resolved-ref: "817e1de1162574b66013466005c66ed175a367d9"
+      resolved-ref: a0e6cebef8ca58767fcd6d2afdedc3fa1b5a88c1
       url: "https://gitcode.com/CPF-Flutter/flutter_packages.git"
     source: git
     version: "1.9.0"
@@ -953,12 +954,12 @@ packages:
   native_toolchain_c:
     dependency: "direct overridden"
     description:
-      path: "pkgs/native_toolchain_c"
-      ref: "flutter_3.47.7_deps"
-      resolved-ref: "124484c19678e7fbc21de3ef6726a5e6bd51832e"
-      url: "https://gitcode.com/CPF-Flutter/fluttertpc_dart_native.git"
+      path: "."
+      ref: main
+      resolved-ref: e9624dd800d7ca833451d521f47b50971293dbb8
+      url: "https://gitcode.com/hxa-flutter/native_toolchain_c.git"
     source: git
-    version: "0.19.2"
+    version: "0.17.4"
   native_toolchain_rust:
     dependency: "direct overridden"
     description:
@@ -1174,10 +1175,10 @@ packages:
     dependency: transitive
     description:
       name: record_use
-      sha256: "1cb8564af8d43b464294411db9217f5ec04891c6f22ee2c32d73ae05e88a6bd2"
+      sha256: "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "0.6.0"
   riverpod:
     dependency: "direct main"
     description:
@@ -1476,7 +1477,7 @@ packages:
     description:
       path: sqlite3
       ref: main
-      resolved-ref: b9f5614768384be50003bd1a0ebbd02c7a945967
+      resolved-ref: "1201bc616db88f650dd1a77f69df134b7c9c16ea"
       url: "https://github.com/tljk/sqlite3.dart"
     source: git
     version: "3.4.0"

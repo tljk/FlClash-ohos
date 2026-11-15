@@ -1,7 +1,7 @@
 name: fl_clash
 description: A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
 publish_to: 'none'
-version: 0.8.99+2026110201
+version: 0.8.99+2026111501
 environment:
   sdk: '>=3.10.0 <4.0.0'
 
@@ -182,7 +182,7 @@ dependency_overrides:
   app_links:
     git:
       url: https://gitcode.com/CPF-Flutter/fluttertpc_app_links.git
-      ref: br_v7.0.0_ohos
+      ref: br_7.2.2_ohos_dev
       path: app_links
   dynamic_color:
     git:
@@ -194,11 +194,15 @@ dependency_overrides:
       url: https://gitcode.com/CPF-Flutter/fluttertpc_dart_native.git
       path: pkgs/code_assets
       ref: flutter_3.47.7_deps
+  hooks:
+    git:
+      url: https://gitcode.com/openharmony-sig/fluttertpc_dart_native.git
+      path: pkgs/hooks
+      ref: flutter_3.47.7_deps
   native_toolchain_c:
     git:
-      url: https://gitcode.com/CPF-Flutter/fluttertpc_dart_native.git
-      path: pkgs/native_toolchain_c
-      ref: flutter_3.47.7_deps
+      url: https://gitcode.com/hxa-flutter/native_toolchain_c.git
+      ref: main
   material_ui:
     git:
       url: https://gitcode.com/CPF-Flutter/flutter_packages.git

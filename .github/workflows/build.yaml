@@ -20,6 +20,7 @@ env:
   GO_VERSION: '1.26.4'
   NDK_VERSION: r28c
   SDK_VERSION: 26.0.0.821
+  GIT_LFS_SKIP_SMUDGE: 1
 
 jobs:
   dart:
