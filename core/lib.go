@@ -130,9 +130,9 @@ func (th *TunHandler) handleResolveProcess(source, target net.Addr) (int, string
 		protocol = syscall.IPPROTO_TCP
 	}
 	var uid int
-	if runtime.GOOS == "openharmony" && sdkVersion.Load() < 23 {
+	if runtime.GOOS == "android" && sdkVersion.Load() < 29 {
 		uid = platform.QuerySocketUidFromProcFs(source, target)
-	} else if runtime.GOOS == "android" && sdkVersion.Load() < 29 {
+	} else if runtime.GOOS != "android" && sdkVersion.Load() < 23 {
 		uid = platform.QuerySocketUidFromProcFs(source, target)
 	} else {
 		uid = resolveUid(th.callback, protocol, source.String(), target.String())
