@@ -1,6 +1,6 @@
 
 {
-  "apiType": 'stageMode',
+  "apiType": "stageMode",
   "buildOption": {
   },
   "buildOptionSet": [
@@ -18,6 +18,17 @@
             "./consumer-rules.txt"
           ]
         }
+      },
+      "nativeLib": {
+        "debugSymbol": {
+          "strip": true,
+          "exclude": []
+        },
+        "filter": {
+          "excludes": [
+            "**/x86_64/*.so"
+          ]
+        }
       }
     }
   ],
@@ -25,6 +36,6 @@
     {
       "name": "default",
       "runtimeOS": "HarmonyOS"
-    },
+    }
   ]
 }

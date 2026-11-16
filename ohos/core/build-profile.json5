@@ -35,13 +35,18 @@
         "debugSymbol": {
           "strip": true,
           "exclude": []
+        },
+        "filter": {
+          "excludes": [
+            "**/x86_64/*.so"
+          ]
         }
       }
-    },
+    }
   ],
   "targets": [
     {
       "name": "default"
-    },
+    }
   ]
 }

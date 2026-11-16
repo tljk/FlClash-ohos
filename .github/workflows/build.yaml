@@ -237,11 +237,11 @@ jobs:
 
       - name: Setup OpenHarmony Go
         run: |
-          git clone -b release-branch.go1.24 --depth 1 https://gitcode.com/openharmony-sig/ohos_golang_go.git "$HOME/ohos-go"
-          cd "$HOME/ohos-go/src"
-          ./make.bash
-          echo "GOROOT=$HOME/ohos-go" >> "$GITHUB_ENV"
-          echo "$HOME/ohos-go/bin" >> "$GITHUB_PATH"
+          python3 -c 'import sys; assert sys.version_info >= (3, 12), "Python 3.12+ is required"'
+          git clone -b v0.1.0 --depth 1 https://github.com/DreamistW/go-ohos-port.git "$RUNNER_TEMP/go-ohos-port"
+          python3 "$RUNNER_TEMP/go-ohos-port/scripts/prepare-toolchain.py" "$RUNNER_TEMP/ohos-go"
+          echo "GOROOT=$RUNNER_TEMP/ohos-go/go" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/ohos-go/go/bin" >> "$GITHUB_PATH"
 
       - name: Setup OpenHarmony SDK
         uses: ErBWs/setup-ohos@v2.0.0
@@ -432,11 +432,11 @@ jobs:
       - name: Setup OpenHarmony Go
         if: startsWith(matrix.platform,'ohos')
         run: |
-          git clone -b release-branch.go1.24 --depth 1 https://gitcode.com/openharmony-sig/ohos_golang_go.git "$HOME/ohos-go"
-          cd "$HOME/ohos-go/src"
-          ./make.bash
-          echo "GOROOT=$HOME/ohos-go" >> "$GITHUB_ENV"
-          echo "$HOME/ohos-go/bin" >> "$GITHUB_PATH"
+          python3 -c 'import sys; assert sys.version_info >= (3, 12), "Python 3.12+ is required"'
+          git clone -b v0.1.0 --depth 1 https://github.com/DreamistW/go-ohos-port.git "$RUNNER_TEMP/go-ohos-port"
+          python3 "$RUNNER_TEMP/go-ohos-port/scripts/prepare-toolchain.py" "$RUNNER_TEMP/ohos-go"
+          echo "GOROOT=$RUNNER_TEMP/ohos-go/go" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/ohos-go/go/bin" >> "$GITHUB_PATH"
 
       - name: Setup Rust cache
         uses: Swatinem/rust-cache@v2

@@ -19,6 +19,12 @@ const _androidFlutterTarget = {
   'amd64': 'android-x64',
 };
 
+const _ohosFlutterTarget = {
+  'arm': 'ohos-arm',
+  'arm64': 'ohos-arm64',
+  'amd64': 'ohos-x64',
+};
+
 const _hostPlatform = {
   'linux': 'linux',
   'macos': 'macos',
@@ -209,7 +215,7 @@ Future<int> _package(
       '--targets',
       targets,
       if (androidArch != null)
-        '--build-target-platform=${_androidFlutterTarget[androidArch]!}',
+        '--build-target-platform=${platform == 'android' ? _androidFlutterTarget[androidArch]! : _ohosFlutterTarget[androidArch]!}',
       if (flutterBuildArgs.isNotEmpty)
         '--flutter-build-args=${flutterBuildArgs.join(',')}',
       ...descriptionArgs,
