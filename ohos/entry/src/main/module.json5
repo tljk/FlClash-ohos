@@ -33,6 +33,25 @@
             "actions": [
               "action.system.home"
             ]
+          },
+          {
+            "actions": [
+              "ohos.want.action.viewData"
+            ],
+            "uris": [
+              {
+                "scheme": "clash",
+                "host": "install-config"
+              },
+              {
+                "scheme": "clashmeta",
+                "host": "install-config"
+              },
+              {
+                "scheme": "flclash",
+                "host": "install-config"
+              }
+            ]
           }
         ]
       },

@@ -7,6 +7,9 @@ on:
 env:
   IS_STABLE: ${{ !contains(github.ref, '-') }}
   FLUTTER_VERSION: '3.44.4'
+  FLUTTER_VERSION_OHOS: '3.44.9+ohos-1.0.0-beta'
+  FLUTTER_BRANCH_OHOS: 'oh-3.44.9-beta'
+  GIT_LFS_SKIP_SMUDGE: 1
 
 jobs:
   test:
@@ -39,22 +42,16 @@ jobs:
           version: 26.0.0.821
           cache: true
 
-      - name: Setup Flutter
-        if: matrix.platform != 'ohos'
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
       - name: Setup Flutter With OpenHarmony
-        if: matrix.platform == 'ohos'
-        run: |
-          git clone -b oh-3.44.9-beta --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.44.10
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
-          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
-          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+        uses: tljk/flutter-action@main
+        with:
+          channel: ${{ env.FLUTTER_BRANCH_OHOS }}
+          flutter-version: ${{ env.FLUTTER_VERSION_OHOS }}
+          git-source: https://gitcode.com/CPF-Flutter/flutter_flutter.git
+          cache: true
+          cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
+          pub-cache: true
+      - run: bash .github/revert_flutter_ohos.sh
 
       - name: Install dependencies
         run: flutter pub get
@@ -220,22 +217,16 @@ jobs:
           version: 26.0.0.821
           cache: true
 
-      - name: Setup Flutter
-        if: matrix.platform != 'ohos'
-        uses: subosito/flutter-action@v2
-        with:
-          channel: master
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
       - name: Setup Flutter With OpenHarmony
-        if: matrix.platform == 'ohos'
-        run: |
-          git clone -b oh-3.44.9-beta --depth 1 https://gitcode.com/CPF-Flutter/flutter_flutter.git "$RUNNER_TOOL_CACHE/flutter-ohos"
-          git -C "$RUNNER_TOOL_CACHE/flutter-ohos" tag 3.44.10
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin" >> "$GITHUB_PATH"
-          echo "$RUNNER_TOOL_CACHE/flutter-ohos/bin/cache/dart-sdk/bin" >> "$GITHUB_PATH"
-          echo "PUB_CACHE=$HOME/.pub-cache" >> "$GITHUB_ENV"
-          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+        uses: tljk/flutter-action@main
+        with:
+          channel: ${{ env.FLUTTER_BRANCH_OHOS }}
+          flutter-version: ${{ env.FLUTTER_VERSION_OHOS }}
+          git-source: https://gitcode.com/CPF-Flutter/flutter_flutter.git
+          cache: true
+          cache-key: ohos-flutter-:os:-:version:-:arch:-${{ hashFiles('.github/revert_flutter_ohos.sh') }}
+          pub-cache: true
+      - run: bash .github/revert_flutter_ohos.sh
 
       - name: Setup Xcode
         if: startsWith(matrix.platform,'macos')

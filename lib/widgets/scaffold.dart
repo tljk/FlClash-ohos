@@ -311,6 +311,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     final backActionProvider = CommonScaffoldBackActionProvider.of(context);
     final isTV = widget.isTV ?? system.isTV;
     final body = SafeArea(
+      bottom: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

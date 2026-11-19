@@ -154,6 +154,11 @@ dependency_overrides:
       url: https://gitcode.com/CPF-Flutter/fluttertpc_dynamic_color.git
       path: packages/dynamic_color
       ref: dev
+  code_assets:
+    git:
+      url: https://gitcode.com/CPF-Flutter/fluttertpc_dart_native.git
+      path: pkgs/code_assets
+      ref: flutter_3.44.9_deps
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -97,9 +97,9 @@ func (th *TunHandler) handleResolveProcess(source, target net.Addr) string {
 	case "tcp", "tcp4", "tcp6":
 		protocol = syscall.IPPROTO_TCP
 	}
-	if runtime.GOOS == "openharmony" && version < 23 {
+	if runtime.GOOS == "android" && version < 29 {
 		uid = platform.QuerySocketUidFromProcFs(source, target)
-	} else if runtime.GOOS == "android" && version < 29 {
+	} else if runtime.GOOS != "android" && version < 23 {
 		uid = platform.QuerySocketUidFromProcFs(source, target)
 	}
 	return resolveProcess(th.callback, protocol, source.String(), target.String(), uid)
