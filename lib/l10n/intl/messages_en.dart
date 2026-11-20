@@ -953,6 +953,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Start in the background",
     ),
     "size": MessageLookupByLibrary.simpleMessage("Size"),
+    "smartReach": MessageLookupByLibrary.simpleMessage("Smart Reach"),
+    "smartReachDesc": MessageLookupByLibrary.simpleMessage(
+      "Action button follows your operating hand",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("Socks Port"),
     "sort": MessageLookupByLibrary.simpleMessage("Sort"),
     "source": MessageLookupByLibrary.simpleMessage("Source"),

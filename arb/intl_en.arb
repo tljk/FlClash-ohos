@@ -47,6 +47,8 @@
   "logcatDesc": "Disabling will hide the log entry",
   "autoCheckUpdate": "Auto check updates",
   "autoCheckUpdateDesc": "Auto check for updates when the app starts",
+  "smartReach": "Smart Reach",
+  "smartReachDesc": "Action button follows your operating hand",
   "accessControl": "AccessControl",
   "accessControlDesc": "Configure application access proxy",
   "application": "Application",

@@ -1,5 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/manager/holding_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/widgets/pop_scope.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,8 @@ class CommonScaffoldState extends State<CommonScaffold> {
   final ValueNotifier<bool> _isFabExtendedNotifier = ValueNotifier(true);
   final ValueNotifier<List<String>> _keywordsNotifier = ValueNotifier([]);
   final _textController = TextEditingController();
+  FloatingActionButtonLocation? _fabLocation;
+  bool _isHoldingListenerRegistered = false;
 
   bool get _isSearch {
     return _appBarState.value.searchState?.query != null;
@@ -75,6 +78,11 @@ class CommonScaffoldState extends State<CommonScaffold> {
       AppBarState(editState: widget.editState, searchState: widget.searchState),
     );
     _loadingNotifier.value = widget.isLoading;
+    if (system.isOhos && widget.floatingActionButton != null) {
+      _isHoldingListenerRegistered = true;
+      _fabLocation = getFloatingActionButtonLocation(holdingHandState.handSide);
+      holdingHandState.addListener(_handleHandSideChanged);
+    }
   }
 
   Future<void> _updateSearchState(AppBarSearchStateBuilder builder) async {
@@ -125,6 +133,33 @@ class CommonScaffoldState extends State<CommonScaffold> {
     if (oldWidget.isLoading != widget.isLoading) {
       _loadingNotifier.value = widget.isLoading;
     }
+    if (system.isOhos &&
+        oldWidget.floatingActionButton != widget.floatingActionButton) {
+      if (widget.floatingActionButton != null &&
+          !_isHoldingListenerRegistered) {
+        _isHoldingListenerRegistered = true;
+        _fabLocation = getFloatingActionButtonLocation(
+          holdingHandState.handSide,
+        );
+        holdingHandState.addListener(_handleHandSideChanged);
+      } else if (widget.floatingActionButton == null &&
+          _isHoldingListenerRegistered) {
+        _isHoldingListenerRegistered = false;
+        holdingHandState.removeListener(_handleHandSideChanged);
+        _fabLocation = null;
+      }
+    }
+  }
+
+  void _handleHandSideChanged() {
+    if (!mounted) {
+      return;
+    }
+    setState(
+      () => _fabLocation = getFloatingActionButtonLocation(
+        holdingHandState.handSide,
+      ),
+    );
   }
 
   void _handleClearInput() {
@@ -166,6 +201,10 @@ class CommonScaffoldState extends State<CommonScaffold> {
 
   @override
   void dispose() {
+    if (_isHoldingListenerRegistered) {
+      _isHoldingListenerRegistered = false;
+      holdingHandState.removeListener(_handleHandSideChanged);
+    }
     _appBarState.dispose();
     _textController.dispose();
     _isFabExtendedNotifier.dispose();
@@ -375,6 +414,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
       ),
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       backgroundColor: widget.backgroundColor,
+      floatingActionButtonLocation: system.isOhos ? _fabLocation : null,
       floatingActionButton: !isTV && widget.floatingActionButton != null
           ? ValueListenableBuilder<bool>(
               valueListenable: _isFabExtendedNotifier,
@@ -389,6 +429,16 @@ class CommonScaffoldState extends State<CommonScaffold> {
           : null,
     );
   }
+}
+
+FloatingActionButtonLocation? getFloatingActionButtonLocation(
+  HandSide? handSide,
+) {
+  return switch (handSide) {
+    HandSide.left => FloatingActionButtonLocation.startFloat,
+    HandSide.right => FloatingActionButtonLocation.endFloat,
+    _ => null,
+  };
 }
 
 List<Widget> genActions(List<Widget> actions, {double? space}) {

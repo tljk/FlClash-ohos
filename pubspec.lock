@@ -588,6 +588,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  holding:
+    dependency: "direct main"
+    description:
+      name: holding
+      sha256: ca4bb386cb0bcfc0b936c937cfed0955ae8b724fe3dfe30305e5f864c7190a43
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   hooks:
     dependency: transitive
     description:
@@ -1854,5 +1862,5 @@ packages:
     source: git
     version: "2.1.0"
 sdks:
-  dart: ">=3.12.0 <4.0.0"
-  flutter: ">=3.44.0"
+  dart: ">=3.12.2 <4.0.0"
+  flutter: ">=3.44.9"

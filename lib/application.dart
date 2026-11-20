@@ -99,7 +99,11 @@ class ApplicationState extends ConsumerState<Application> {
         ),
       );
     }
-    return AndroidManager(child: TileManager(child: child));
+    final platformChild = AndroidManager(child: TileManager(child: child));
+    if (system.isOhos) {
+      return HoldingManager(child: platformChild);
+    }
+    return platformChild;
   }
 
   Widget _buildState({required Widget child}) {

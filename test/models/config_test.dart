@@ -98,6 +98,7 @@ void main() {
         AppSettingProps.fromJson,
       );
       expect(restored.onlyStatisticsProxy, false);
+      expect(restored.smartReach, true);
       expect(restored.autoLaunch, false);
       expect(restored.silentLaunch, false);
       expect(restored.autoRun, false);
@@ -116,6 +117,7 @@ void main() {
       const props = AppSettingProps(
         locale: 'zh_CN',
         onlyStatisticsProxy: true,
+        smartReach: false,
         autoLaunch: true,
         closeConnections: false,
         testUrl: 'https://custom.test',
@@ -127,6 +129,7 @@ void main() {
       );
       expect(restored.locale, 'zh_CN');
       expect(restored.onlyStatisticsProxy, true);
+      expect(restored.smartReach, false);
       expect(restored.autoLaunch, true);
       expect(restored.closeConnections, false);
       expect(restored.testUrl, 'https://custom.test');

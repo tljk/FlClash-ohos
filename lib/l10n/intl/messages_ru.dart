@@ -1000,6 +1000,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Запуск в фоновом режиме",
     ),
     "size": MessageLookupByLibrary.simpleMessage("Размер"),
+    "smartReach": MessageLookupByLibrary.simpleMessage(
+      "Управление с учётом хвата",
+    ),
+    "smartReachDesc": MessageLookupByLibrary.simpleMessage(
+      "Кнопка действия следует за рукой, которой вы управляете устройством",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("Socks-порт"),
     "sort": MessageLookupByLibrary.simpleMessage("Сортировка"),
     "source": MessageLookupByLibrary.simpleMessage("Источник"),

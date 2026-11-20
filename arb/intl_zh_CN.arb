@@ -47,6 +47,8 @@
   "logcatDesc": "禁用将会隐藏日志入口",
   "autoCheckUpdate": "自动检查更新",
   "autoCheckUpdateDesc": "应用启动时自动检查更新",
+  "smartReach": "智感握姿",
+  "smartReachDesc": "操作按钮跟随您的操作手",
   "accessControl": "访问控制",
   "accessControlDesc": "配置应用访问代理",
   "application": "应用程序",

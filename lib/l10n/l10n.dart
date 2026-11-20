@@ -394,6 +394,21 @@ class AppLocalizations {
     );
   }
 
+  /// `Smart Reach`
+  String get smartReach {
+    return Intl.message('Smart Reach', name: 'smartReach', desc: '', args: []);
+  }
+
+  /// `Action button follows your operating hand`
+  String get smartReachDesc {
+    return Intl.message(
+      'Action button follows your operating hand',
+      name: 'smartReachDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `AccessControl`
   String get accessControl {
     return Intl.message(

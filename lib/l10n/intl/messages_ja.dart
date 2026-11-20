@@ -773,6 +773,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "silentLaunch": MessageLookupByLibrary.simpleMessage("バックグラウンド起動"),
     "silentLaunchDesc": MessageLookupByLibrary.simpleMessage("バックグラウンドで起動"),
     "size": MessageLookupByLibrary.simpleMessage("サイズ"),
+    "smartReach": MessageLookupByLibrary.simpleMessage("スマートリーチ"),
+    "smartReachDesc": MessageLookupByLibrary.simpleMessage(
+      "アクションボタンは操作する手に追従します",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("Socksポート"),
     "sort": MessageLookupByLibrary.simpleMessage("並び替え"),
     "source": MessageLookupByLibrary.simpleMessage("ソース"),

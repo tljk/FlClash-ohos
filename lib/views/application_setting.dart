@@ -46,6 +46,29 @@ class UsageItem extends ConsumerWidget {
       },
     );
   }
+
+}
+
+class SmartReachItem extends ConsumerWidget {
+  const SmartReachItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final smartReach = ref.watch(
+      appSettingProvider.select((state) => state.smartReach),
+    );
+    return ListItem.toggle(
+      title: Text(appLocalizations.smartReach),
+      subtitle: Text(appLocalizations.smartReachDesc),
+      value: smartReach,
+      onChanged: (value) {
+        ref
+            .read(appSettingProvider.notifier)
+            .update((state) => state.copyWith(smartReach: value));
+      },
+    );
+  }
 }
 
 class MinimizeItem extends ConsumerWidget {
@@ -263,6 +286,7 @@ class ApplicationSettingView extends StatelessWidget {
       ],
       const AutoRunItem(),
       if (system.isAndroid || system.isOhos) ...[const HiddenItem()],
+      if (system.isOhos) const SmartReachItem(),
       const AnimateTabItem(),
       const OpenLogsItem(),
       const CloseConnectionsItem(),

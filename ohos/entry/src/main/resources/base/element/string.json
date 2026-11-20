@@ -61,6 +61,10 @@
       "value": ""
     },
     {
+      "name": "permission_reason_detect_gesture_reason",
+      "value": ""
+    },
+    {
       "name": "widget_desc",
       "value": ""
     },
