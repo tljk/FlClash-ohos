@@ -2,7 +2,6 @@ import { vpnExtension, VpnExtensionAbility, connection } from '@kit.NetworkKit'
 import { Want } from '@kit.AbilityKit'
 import { rpc } from '@kit.IPCKit'
 import { deviceInfo } from '@kit.BasicServicesKit'
-import { util } from '@kit.ArkTS'
 import { setEventListener, invokeMethod, startTUN, stopTun, forceGC, updateDns, quickSetup } from 'core'
 import { AccessControlMode, VpnOptions } from '../models/State'
 import { ChunkedSender, ChunkedReader } from '../utils/Rpc'
@@ -93,8 +92,12 @@ export default class VpnExtAbility extends VpnExtensionAbility {
   }
 
   onDestroy(): void {
-    this.vpnConnection?.destroy()
-    this.networkManager?.unsubscribe()
+    (this.vpnId ? stopTun() : Promise.resolve()).finally(() => {
+      this.vpnConnection?.destroy().then(() => {
+        this.vpnId = undefined
+        this.networkManager?.unsubscribe()
+      })
+    })
   }
 
   onConnect(want: Want): rpc.RemoteObject {
@@ -120,7 +123,7 @@ export default class VpnExtAbility extends VpnExtensionAbility {
     const destination = this.toLinkAddress(cidr, family)
     const gateway: connection.NetAddress = { address: '', family }
     return {
-      interface: '',
+      interface: 'vpn-tun',
       destination,
       gateway,
       hasGateway: false,
@@ -128,7 +131,7 @@ export default class VpnExtAbility extends VpnExtensionAbility {
     }
   }
 
-  private toVpnConfig(options: VpnOptions): vpnExtension.VpnConfig {
+  private toVpnConfig(options: VpnOptions, vpnId?: string): vpnExtension.VpnConfig {
     const ipv4RouteAddress = options.routeAddress.filter((it) => !it.includes(':'))
     const ipv6RouteAddress = options.routeAddress.filter((it) => it.includes(':'))
 
@@ -155,6 +158,7 @@ export default class VpnExtAbility extends VpnExtensionAbility {
       isIPv6Accepted: options.ipv6,
       isBlocking: !options.allowBypass,
     }
+    if (vpnId) config.vpnId = vpnId
 
     const accessControl = options.accessControlProps
     if (accessControl.enable) {
@@ -234,22 +238,24 @@ export default class VpnExtAbility extends VpnExtensionAbility {
 
   handleStartService(vpnOptions: VpnOptions, runTime: number, remote: rpc.RemoteObject): void {
     if (vpnOptions.enable) {
-      const vpnConfig = this.toVpnConfig(vpnOptions)
-      this.vpnConnection?.create(vpnConfig).then((fd: number) => startTUN(
-        (socketFd: number): Promise<void> => this.protect(socketFd),
-        (protocol: number, source: string, target: string): number => this.resolveUid(protocol, source, target),
-        fd,
-        vpnOptions.stack,
-        this.toTunAddress(vpnOptions),
-        this.toTunDns(vpnOptions),
-      )).then(() => {
-        if (deviceInfo.sdkApiVersion >= 20) {
-          this.vpnConnection?.generateVpnId().then((vpnId) => { this.vpnId = vpnId })
-        } else {
-          this.vpnId = util.generateRandomUUID(true)
-        }
-        this.networkManager?.subscribe(updateDns)
-        this.runTime = runTime !== 0 ? runTime : Date.now()
+      this.vpnConnection?.generateVpnId().then((vpnId: string) => {
+        const vpnConfig = this.toVpnConfig(vpnOptions)
+        return this.vpnConnection?.create(vpnConfig).then((fd: number) => startTUN(
+          (socketFd: number): Promise<void> => this.protect(socketFd),
+          (protocol: number, source: string, target: string): number => this.resolveUid(protocol, source, target),
+          fd,
+          vpnOptions.stack,
+          this.toTunAddress(vpnOptions),
+          this.toTunDns(vpnOptions),
+        )).then((started: boolean) => {
+          if (!started) {
+            this.vpnConnection?.destroy()
+            throw new Error('Core rejected the TUN file descriptor')
+          }
+          this.vpnId = vpnId
+          this.networkManager?.subscribe(updateDns)
+          this.runTime = runTime !== 0 ? runTime : Date.now()
+        })
       }).catch((err: Error) => {
         console.log(`Call startTUN failed <= ${err.message ?? err}`)
       }).finally(() => {
@@ -265,11 +271,12 @@ export default class VpnExtAbility extends VpnExtensionAbility {
 
   handleStopService(remote: rpc.RemoteObject): void {
     (this.vpnId ? stopTun() : Promise.resolve()).then(() => {
-      this.vpnId = undefined
-      this.vpnConnection?.destroy()
-      this.networkManager?.unsubscribe()
-      this.runTime = 0
-      this.sendResult(remote, this.runTime)
+      this.vpnConnection?.destroy().then(() => {
+        this.vpnId = undefined
+        this.networkManager?.unsubscribe()
+        this.runTime = 0
+        this.sendResult(remote, this.runTime)
+      })
     })
   }
 

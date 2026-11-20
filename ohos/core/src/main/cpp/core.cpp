@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <future>
+#include <unistd.h>
 
 enum class InterfaceType {
     Invoke,
@@ -147,7 +148,7 @@ static napi_value InvokeMethod(napi_env env, napi_callback_info info) {
 
 static void ExecuteStartTun(napi_env env, void *data) {
     StartTunWork *work = reinterpret_cast<StartTunWork*>(data);
-    work->started = startTUN(work->tunInterface, work->fd, work->stack, work->address, work->dns);
+    work->started = startTUN(work->tunInterface, dup(work->fd), work->stack, work->address, work->dns);
 }
 
 static void CompleteStartTun(napi_env env, napi_status status, void *data) {

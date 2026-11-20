@@ -370,13 +370,16 @@ class GeneralView extends ConsumerWidget {
         update: (state, value) => state.copyWith(tcpConcurrent: value),
       ),
       if (system.isDesktop) const KeepAliveIntervalItem(),
-      _clashToggle(
-        title: (l) => l.findProcessMode,
-        select: (state) => state.findProcessMode == FindProcessMode.always,
-        update: (state, value) => state.copyWith(
-          findProcessMode: value ? FindProcessMode.always : FindProcessMode.off,
+      if (!system.isOhos)
+        _clashToggle(
+          title: (l) => l.findProcessMode,
+          select: (state) => state.findProcessMode == FindProcessMode.always,
+          update: (state, value) => state.copyWith(
+            findProcessMode: value
+                ? FindProcessMode.always
+                : FindProcessMode.off,
+          ),
         ),
-      ),
       _appSettingToggle(
         title: (l) => l.autoCloseConnections,
         subtitle: (l) => l.autoCloseConnectionsDesc,

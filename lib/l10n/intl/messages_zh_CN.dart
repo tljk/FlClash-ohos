@@ -624,7 +624,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "justNow": MessageLookupByLibrary.simpleMessage("刚刚"),
     "keep": MessageLookupByLibrary.simpleMessage("从最近任务中移除"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage("TCP保持活动间隔"),
-    "keepDesc": MessageLookupByLibrary.simpleMessage("应用从最近任务中移除时,保持VPN服务运行"),
+    "keepDesc": MessageLookupByLibrary.simpleMessage("应用从最近任务中移除时，保持VPN服务运行"),
     "key": MessageLookupByLibrary.simpleMessage("键"),
     "language": MessageLookupByLibrary.simpleMessage("语言"),
     "large": MessageLookupByLibrary.simpleMessage("大"),
