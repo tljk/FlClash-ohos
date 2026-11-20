@@ -1454,6 +1454,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "singleValueTip": m51,
     "size": MessageLookupByLibrary.simpleMessage("Размер"),
     "slide": MessageLookupByLibrary.simpleMessage("Сдвиг"),
+    "smartReach": MessageLookupByLibrary.simpleMessage(
+      "Управление с учётом хвата",
+    ),
+    "smartReachDesc": MessageLookupByLibrary.simpleMessage(
+      "Кнопка действия следует за рукой, которой вы управляете устройством",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("Порт SOCKS"),
     "sort": MessageLookupByLibrary.simpleMessage("Сортировка"),
     "source": MessageLookupByLibrary.simpleMessage("Источник"),

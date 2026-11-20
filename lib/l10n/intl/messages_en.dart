@@ -1381,6 +1381,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "singleValueTip": m51,
     "size": MessageLookupByLibrary.simpleMessage("Size"),
     "slide": MessageLookupByLibrary.simpleMessage("Slide"),
+    "smartReach": MessageLookupByLibrary.simpleMessage("Smart Reach"),
+    "smartReachDesc": MessageLookupByLibrary.simpleMessage(
+      "Action button follows your operating hand",
+    ),
     "socksPort": MessageLookupByLibrary.simpleMessage("SOCKS port"),
     "sort": MessageLookupByLibrary.simpleMessage("Sort"),
     "source": MessageLookupByLibrary.simpleMessage("Source"),

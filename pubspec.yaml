@@ -1,7 +1,7 @@
 name: fl_clash
 description: A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
 publish_to: 'none'
-version: 0.8.99+2026111501
+version: 0.8.99+2026112001
 environment:
   sdk: '>=3.10.0 <4.0.0'
 
@@ -84,6 +84,7 @@ dependencies:
     path: plugins/rust_api
   setup:
     path: plugins/setup
+  holding: ^0.0.2
 
 dependency_overrides:
   sqlite3:
@@ -207,11 +208,6 @@ dependency_overrides:
     git:
       url: https://gitcode.com/CPF-Flutter/flutter_packages.git
       path: packages/material_ui
-      ref: oh-3.47.7-dev
-  cupertino_ui:
-    git:
-      url: https://gitcode.com/CPF-Flutter/flutter_packages.git
-      path: packages/cupertino_ui
       ref: oh-3.47.7-dev
 
 dev_dependencies:

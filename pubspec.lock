@@ -293,7 +293,7 @@ packages:
     source: hosted
     version: "3.0.8"
   cupertino_ui:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "packages/cupertino_ui"
       ref: "oh-3.47.7-dev"
@@ -649,6 +649,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  holding:
+    dependency: "direct main"
+    description:
+      name: holding
+      sha256: ca4bb386cb0bcfc0b936c937cfed0955ae8b724fe3dfe30305e5f864c7190a43
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   hooks:
     dependency: "direct overridden"
     description:

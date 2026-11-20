@@ -63,6 +63,8 @@
   "autoCheckUpdate": "自动检查更新",
   "checkCertificate": "校验 TLS 证书",
   "checkCertificateDesc": "拒绝不受信任的证书。关闭后订阅和备份将暴露于中间人攻击",
+  "smartReach": "智感握姿",
+  "smartReachDesc": "操作按钮跟随您的操作手",
   "accessControl": "访问控制",
   "accessControlDesc": "配置应用访问代理",
   "edit": "编辑",

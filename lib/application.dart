@@ -44,7 +44,11 @@ Widget buildManagerStack({
             child: HotKeyManager(child: ProxyManager(child: state)),
           ),
         )
-      : AndroidManager(child: TileManager(child: state));
+      : AndroidManager(
+          child: system.isOhos
+              ? HoldingManager(child: state)
+              : TileManager(child: state),
+        );
   return AppEnvManager(
     child: LocaleManager(
       child: StatusManager(child: ThemeManager(child: platformState)),

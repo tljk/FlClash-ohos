@@ -63,6 +63,8 @@
   "autoCheckUpdate": "更新の自動チェック",
   "checkCertificate": "TLS証明書を検証",
   "checkCertificateDesc": "信頼できない証明書を拒否します。無効にすると、サブスクリプションやバックアップが中間者攻撃にさらされます",
+  "smartReach": "スマートリーチ",
+  "smartReachDesc": "アクションボタンは操作する手に追従します",
   "accessControl": "アクセス制御",
   "accessControlDesc": "プロキシを利用するアプリを設定します",
   "edit": "編集",

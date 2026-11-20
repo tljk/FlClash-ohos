@@ -1,5 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/icons/icons.dart';
+import 'package:fl_clash/manager/holding_manager.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
@@ -93,6 +94,8 @@ class CommonScaffoldState extends State<CommonScaffold> {
   final ValueNotifier<List<String>> _keywordsNotifier = ValueNotifier([]);
   final _textController = TextEditingController();
   final _searchFocusNode = FocusNode();
+  FloatingActionButtonLocation? _fabLocation;
+  bool _isHandSideListenerRegistered = false;
 
   bool get _isSearch {
     return _appBarState.value.searchState?.query != null;
@@ -122,6 +125,11 @@ class CommonScaffoldState extends State<CommonScaffold> {
     );
     _loadingNotifier.value = widget.isLoading;
     HardwareKeyboard.instance.addHandler(_handleSearchShortcut);
+    if (system.isOhos && _hasFabAction) {
+      _isHandSideListenerRegistered = true;
+      _fabLocation = getFloatingActionButtonLocation(holdingHandState.handSide);
+      holdingHandState.addListener(_handleHandSideChanged);
+    }
   }
 
   Future<void> _updateSearchState(AppBarSearchStateBuilder builder) async {
@@ -220,6 +228,35 @@ class CommonScaffoldState extends State<CommonScaffold> {
     if (oldWidget.isLoading != widget.isLoading) {
       _loadingNotifier.value = widget.isLoading;
     }
+    final oldHasFabAction =
+        oldWidget.floatingActionButton != null ||
+        oldWidget.primaryAction != null;
+    if (system.isOhos && oldHasFabAction != _hasFabAction) {
+      if (_hasFabAction) {
+        _isHandSideListenerRegistered = true;
+        _fabLocation = getFloatingActionButtonLocation(
+          holdingHandState.handSide,
+        );
+        holdingHandState.addListener(_handleHandSideChanged);
+      } else {
+        _isHandSideListenerRegistered = false;
+        holdingHandState.removeListener(_handleHandSideChanged);
+        _fabLocation = null;
+      }
+    }
+  }
+
+  bool get _hasFabAction =>
+      widget.floatingActionButton != null || widget.primaryAction != null;
+
+  void _handleHandSideChanged() {
+    if (!mounted) {
+      return;
+    }
+    final location = getFloatingActionButtonLocation(holdingHandState.handSide);
+    if (location != null && location != _fabLocation) {
+      setState(() => _fabLocation = location);
+    }
   }
 
   void _handleClearInput() {
@@ -262,6 +299,10 @@ class CommonScaffoldState extends State<CommonScaffold> {
   @override
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_handleSearchShortcut);
+    if (_isHandSideListenerRegistered) {
+      _isHandSideListenerRegistered = false;
+      holdingHandState.removeListener(_handleHandSideChanged);
+    }
     _appBarState.dispose();
     _textController.dispose();
     _searchFocusNode.dispose();
@@ -731,6 +772,9 @@ class CommonScaffoldState extends State<CommonScaffold> {
           body: content,
           resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
           backgroundColor: widget.backgroundColor,
+          floatingActionButtonLocation: system.isOhos && hasFab
+              ? _fabLocation
+              : null,
           floatingActionButton: fab,
         ),
       );
@@ -750,6 +794,9 @@ class CommonScaffoldState extends State<CommonScaffold> {
           body: sheetBody,
           resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
           backgroundColor: widget.backgroundColor,
+          floatingActionButtonLocation: system.isOhos && hasFab
+              ? _fabLocation
+              : null,
           floatingActionButton: fab,
         ),
       );
@@ -767,6 +814,16 @@ class CommonScaffoldState extends State<CommonScaffold> {
       ),
     );
   }
+}
+
+FloatingActionButtonLocation? getFloatingActionButtonLocation(
+  HandSide? handSide,
+) {
+  return switch (handSide) {
+    HandSide.left => FloatingActionButtonLocation.startFloat,
+    HandSide.right => FloatingActionButtonLocation.endFloat,
+    _ => null,
+  };
 }
 
 class _KeyboardSpacer extends StatelessWidget {

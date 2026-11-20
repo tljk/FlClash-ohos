@@ -319,13 +319,20 @@ class GeneralView extends ConsumerWidget {
               state.copyWith(showNotificationStopAction: value),
         ),
       ],
-      if (system.isOhos)
+      if (system.isOhos) ...[
         _appSettingToggle(
           title: (l) => l.keep,
           subtitle: (l) => l.keepDesc,
           select: (state) => state.hidden,
           update: (state, value) => state.copyWith(hidden: value),
         ),
+        _appSettingToggle(
+          title: (l) => l.smartReach,
+          subtitle: (l) => l.smartReachDesc,
+          select: (state) => state.smartReach,
+          update: (state, value) => state.copyWith(smartReach: value),
+        ),
+      ],
     ];
   }
 
